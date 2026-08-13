@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>محسّن إعادة التدوير | الثروة المضاعفة</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -506,6 +507,20 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 loadData();calculate();onInput();
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(calculate,200);});
+
+// Telegram WebApp Integration (Fullscreen & Expand)
+if (window.Telegram && window.Telegram.WebApp) {
+  try {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    if (typeof tg.requestFullscreen === 'function') {
+      tg.requestFullscreen();
+    }
+  } catch (err) {
+    console.warn('Telegram WebApp error:', err);
+  }
+}
 </script>
 </body>
 </html>
