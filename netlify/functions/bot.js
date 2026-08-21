@@ -115,7 +115,7 @@ exports.handler = async (event) => {
         // Any other text
         await sendTg('sendMessage', {
           chat_id: chatId,
-          text: `مرحباً ${name}! 👋\n\nأنا بوت *Alpha Calc* المخصص لحساب الفائدة المركبة ومضاعفة الأرباح.\n\n👇 يمكنك فتح الحاسبة مباشرة عبر الزر أدناه:`,
+          text: `مرحباً ${name}! 👋\n\nأنا بوت *Alpha Calc* المخصص لحساب الأرباح المركبة ومضاعفة المحفظة.\n\n👇 يمكنك فتح الحاسبة مباشرة عبر الزر أدناه:`,
           parse_mode: 'Markdown',
           reply_markup: {
             inline_keyboard: [

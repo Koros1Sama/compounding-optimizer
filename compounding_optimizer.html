@@ -257,18 +257,32 @@ canvas{display:block}
 .g-credits-author{font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:.3rem}
 .g-credits-dev{font-size:.8rem;color:var(--ink-dim)}
 
-.guide-foot{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-top:1px solid var(--line);background:rgba(255,255,255,.02);gap:.6rem;flex-shrink:0}
+.guide-foot{height:56px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 1.1rem;border-top:1px solid var(--line);background:rgba(255,255,255,.02);gap:.6rem;flex-shrink:0}
 .guide-dots{display:flex;gap:.4rem}
 .guide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:all .25s}
 .guide-dot.active{background:var(--c1);width:22px;border-radius:10px}
 
-.guide-btn{padding:.5rem 1rem;border-radius:var(--r-sm);font-size:.82rem;font-weight:600;font-family:var(--font-ar);cursor:pointer;transition:all .2s;border:none}
+.guide-btn{padding:.5rem .9rem;border-radius:var(--r-sm);font-size:.82rem;font-weight:600;font-family:var(--font-ar);cursor:pointer;transition:all .2s;border:none;white-space:nowrap}
 .guide-btn.primary{background:var(--gb);color:#04121a;box-shadow:0 4px 14px color-mix(in srgb,var(--c1) 40%,transparent)}
 .guide-btn.primary:hover{transform:translateY(-1px);filter:brightness(1.1)}
 .guide-btn.secondary{background:rgba(255,255,255,.07);color:var(--ink);border:1px solid var(--line)}
 .guide-btn.secondary:hover{background:rgba(255,255,255,.12)}
 .guide-btn.restart-btn{background:transparent;color:var(--ink-dim);font-size:.76rem;padding:.4rem .6rem}
 .guide-btn.restart-btn:hover{color:var(--c1)}
+
+/* Show Me Interactive Button inside Guide */
+.btn-guide-showme{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:color-mix(in srgb, var(--c1) 12%, transparent);border:1px solid color-mix(in srgb, var(--c1) 32%, transparent);border-radius:20px;color:var(--c1);font-size:0.72rem;font-weight:700;font-family:var(--font-ar);cursor:pointer;margin-top:5px;transition:all .2s;width:fit-content;user-select:none;-webkit-user-select:none}
+.btn-guide-showme:hover{background:color-mix(in srgb, var(--c1) 24%, transparent);border-color:var(--c1);transform:translateY(-1px);box-shadow:0 2px 8px color-mix(in srgb, var(--c1) 30%, transparent)}
+.btn-guide-showme:active{transform:scale(.96)}
+
+/* Clickable rate-prompt elements when rate is empty without changing appearance */
+body.rate-empty .stat-tile,
+body.rate-empty .csi.go,
+body.rate-empty #chart,
+body.rate-empty #journey,
+body.rate-empty #hero-sub{
+  cursor:pointer;
+}
 
 /* ===== Precision Vector Interactive Tour ===== */
 .tour-overlay{position:fixed;inset:0;z-index:99999;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);display:none}
@@ -280,6 +294,8 @@ canvas{display:block}
 
 .tour-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
 .tour-card-step{font-size:.72rem;font-family:var(--font-num);font-weight:700;color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent);border:1px solid color-mix(in srgb,var(--c1) 30%,transparent);padding:2px 10px;border-radius:50px}
+.tour-back-guide{background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--ink-dim);font-size:.7rem;font-weight:600;font-family:var(--font-ar);padding:2px 8px;border-radius:12px;cursor:pointer;transition:all .2s}
+.tour-back-guide:hover{background:color-mix(in srgb, var(--c1) 15%, transparent);border-color:var(--c1);color:var(--c1)}
 .tour-card-close{background:transparent;border:none;color:var(--ink-faint);cursor:pointer;font-size:1.1rem;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;transition:all .2s}
 .tour-card-close:hover{background:rgba(255,255,255,.1);color:var(--ink)}
 
@@ -371,7 +387,7 @@ canvas{display:block}
         </div>
         <div class="divider"></div>
         <div class="hint"><b>اختياري</b> — لتقدير الأيام والزمن فقط، ولا يغيّر الحد الأمثل (مستقل عن النسبة رياضياً)</div>
-        <div class="field" style="margin-bottom:0">
+        <div class="field" id="step-target-rate" style="margin-bottom:0">
           <label><span>العائد اليومي التقريبي</span><span class="tag-opt">اختياري</span></label>
           <div class="inp"><span class="ik"><svg class="icn"><use href="#i-trending"/></svg></span><input type="text" inputmode="decimal" id="rate" value="1.10" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
         </div>
@@ -539,95 +555,182 @@ canvas{display:block}
         <span>💡 دليل استخدام الحاسبة</span>
       </div>
       <div style="display:flex;align-items:center;gap:.6rem">
-        <span class="gh-step" id="guide-step-tag">الخطوة 1 من 4</span>
+        <span class="gh-step" id="guide-step-tag">الخطوة 1 من 5</span>
         <button type="button" class="guide-close" id="guide-close-btn" aria-label="إغلاق">✕</button>
       </div>
     </div>
 
     <div class="guide-body">
       <!-- Slide 1 -->
-      <div class="guide-slide active" data-slide="1">
-        <div class="guide-img-box">
-          <img src="guide_step1.png" alt="شرح إدخال رأس المال ونقطة التدوير" loading="lazy">
+      <div class="guide-slide active" data-slide="1" style="justify-content:center">
+        <div style="text-align:center;margin-bottom:.85rem">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">💡 ما هي "إعادة التدوير" ولماذا نقوم بها؟</div>
+          <div style="font-size:.8rem;color:var(--ink-dim);margin-top:3px">المفهوم الأساسي لتحقيق أقصى نمو ومضاعفة للمحفظة</div>
         </div>
+
         <div class="g-step-item">
           <div class="g-step-num">1</div>
           <div class="g-step-text">
-            <b>أولاً: أين تجد رأس مالك؟</b><br>
-            انسخ الرقم الموجود تحت كلمة <b>CAPITAL</b> في البوت، واكتبه هنا في خانة "رأس المال الأساسي".
-            <div style="margin:12px 0; border-radius:6px; overflow:hidden; border:1px solid var(--line); display:flex; justify-content:center; background:#111;">
-              <img src="guide_capital.png" alt="موقع رأس المال في البوت" style="max-height:120px; width:auto; display:block;">
-            </div>
-            <div style="margin-top:8px;background:color-mix(in srgb, var(--c1) 10%, transparent);border-right:3px solid var(--c1);padding:8px;border-radius:4px;font-size:0.8rem">
-              <b style="color:var(--c1)">⚠️ تحديث مستمر:</b> أي تغير يحدث في رأس مالك (زيادة بإعادة تدوير/إيداع، أو نقصان بسحب) يجب أن تعود لتحديث الرقم هنا لتبدأ دورة جديدة صحيحة.
-            </div>
+            <b>الأرباح اليومية في البوت متوقفة:</b><br>
+            أرباحك اليومية تتجمع في خانة الأرباح، ولكنها <span class="highlight">لا تولّد أي أرباح جديدة</span> مادامت باقية هناك.
           </div>
         </div>
+
         <div class="g-step-item">
           <div class="g-step-num">2</div>
-          <div class="g-step-text"><b>ثانياً: الرقم المستهدف باللون المميز</b><br>هذا هو <span class="highlight">الحد المثالي</span> الذي تدور الأرباح وتضمّها عند الوصول إليه لتضمن أفضل نمو للمال وتجنب هدر الرسوم.</div>
+          <div class="g-step-text">
+            <b>آلية إعادة التدوير (السحب ثم الإيداع):</b><br>
+            تقوم بسحب أرباحك (إلى محفظتك في Binance مثلاً) ثم <b>تعيد إيداعها في البوت</b> لتنضم مباشرة إلى <b>رأس المال الأساسي (CAPITAL)</b>.
+          </div>
         </div>
-        <div class="g-step-item">
-          <div class="g-step-num">3</div>
-          <div class="g-step-text"><b>ثالثاً: العائد اليومي (اختياري)</b><br>وضعك للنسبة اليومية اختياري ومستقل ولا يؤثر في حجم المبلغ المطلوب، فقط يعطيك المدة الزمنية التقديرية التي ستقوم بإعادة التدوير خلالها.</div>
+
+        <div class="g-step-item" style="margin-bottom:0">
+          <div class="g-step-num">🚀</div>
+          <div class="g-step-text">
+            <b>النتيجة (الأرباح المركبة المتضاعفة):</b><br>
+            عندما تنضم الأرباح لرأس المال، تصبح أرباحك السابقة نفسها تنتج لك أرباحاً جديدة متزايدة كل يوم فتتضاعف محفظتك بسرعة!
+          </div>
         </div>
       </div>
 
       <!-- Slide 2 -->
-      <div class="guide-slide" data-slide="2">
-        <div class="guide-img-box">
-          <img src="guide_step2.png" alt="شرح متابعة الأرباح وحالة الدورة" loading="lazy">
+      <div class="guide-slide" data-slide="2" style="justify-content:center">
+        <div style="text-align:center;margin-bottom:.85rem">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">⚖️ لماذا نحتاج هذه الحاسبة؟ (معضلة الرسوم $1)</div>
+          <div style="font-size:.8rem;color:var(--ink-dim);margin-top:3px">التوقيت الدقيق للسحب هو الفارق بين مضاعفة المال وهدره</div>
         </div>
-        <div class="g-step-item">
-          <div class="g-step-num">⏱️</div>
-          <div class="g-step-text">
-            <b>متابعة حالة الدورة: كم تبقّى؟</b><br>
-            في حال وصلت لرقم معين من الأرباح وتريد معرفة كم تبقّى لك لتصل لوقت أو حد السحب: اكتب أرباحك الحالية في خانة <b>"الأرباح المتراكمة الآن"</b> ويظهر لك كم تبقّى من أرباح وكم تبقّى وقت لتعيد التدوير.
+
+        <div style="display:grid;grid-template-columns:1fr;gap:.65rem">
+          <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r-sm);padding:.75rem .85rem">
+            <div style="color:#f87171;font-weight:700;font-size:.84rem;margin-bottom:3px">⚠️ خطر السحب المبكر بمبالغ صغيرة:</div>
+            <div style="font-size:.8rem;color:var(--ink-dim);line-height:1.55">كل سحب يكلف <b>$1 رسوم شبكة ثابتة</b>. لو سحبت مثلاً $3 أرباح ستدفع $1 وتخسر <b>33% من ربحك</b> هباءً في الرسوم!</div>
           </div>
-        </div>
-        <div class="g-faq-box">
-          <div class="g-faq-q">❓ طيب ما الحل لو أودعت مبلغاً في نصف الدورة..؟</div>
-          <div class="g-faq-a" style="margin-bottom:.6rem">فقط قم بتحديث رأس المال من خانة <b>رأس المال الحالي</b>، وسيتحدث معها المبلغ المطلوب والوقت تلقائياً.</div>
-          <div class="g-faq-q">❓ أيهما أفضل: السحب قبل الهدف أم بعده بقليل؟</div>
-          <div class="g-faq-a">التأخر وتجاوز الهدف آمن جداً، لكن الاستعجال والسحب <b>مبكراً</b> يلتهم نسبة كبيرة من أرباحك في الرسوم الثابتة.</div>
+
+          <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r-sm);padding:.75rem .85rem">
+            <div style="color:#fbbf24;font-weight:700;font-size:.84rem;margin-bottom:3px">⏳ خطر التأخر الطويل:</div>
+            <div style="font-size:.8rem;color:var(--ink-dim);line-height:1.55">لو تركت أرباحك تتراكم لفترات طويلة دون تدوير، سيفوتك مفعول الأرباح المركبة ويتأخر نمو رأس مالك.</div>
+          </div>
+
+          <div style="background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 35%, transparent);border-radius:var(--r-sm);padding:.75rem .85rem">
+            <div style="color:var(--c1);font-weight:700;font-size:.84rem;margin-bottom:3px">🎯 الحل (نقطة التدوير الذهبية):</div>
+            <div style="font-size:.8rem;color:var(--ink);line-height:1.55">الحاسبة تعطيك <b>الرقم المستهدف الدقيق</b> لسحب الأرباح وتدويرها بأعلى كفاءة رياضية وسحق أثر الرسوم تماماً.</div>
+          </div>
         </div>
       </div>
 
       <!-- Slide 3 -->
       <div class="guide-slide" data-slide="3" style="justify-content:center">
-        <div style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.6rem">📊 بقية العرض عبارة عن إحصائيات نمو رأس مالك:</div>
-        <div class="g-feature-grid">
-          <div class="g-feat-card">
-            <div class="fc-title">🚀 ١. رحلة المضاعفة</div>
-            <div class="fc-desc">تظهر لك خلال كم ستضاعف مالك (×2 ، ×4 ، ×8 ...إلخ) والوقت المقدر بالأيام والشهور.</div>
+        <div style="text-align:center;margin-bottom:.65rem">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">🛠️ خطوات استخدام الحاسبة</div>
+          <div style="font-size:.8rem;color:var(--ink-dim);margin-top:2px">كل ما عليك فعله في 3 خطوات بسيطة</div>
+        </div>
+
+        <div class="g-step-item" style="margin-bottom:.65rem">
+          <div class="g-step-num">1</div>
+          <div class="g-step-text" style="width:100%">
+            <b>أين تجد رأس مالك؟</b><br>
+            انسخ الرقم الموجود تحت كلمة <b>CAPITAL</b> في البوت، واكتبه هنا في خانة "رأس المال الأساسي".
+            <div style="margin:6px 0; border-radius:6px; overflow:hidden; border:1px solid var(--line); display:flex; justify-content:center; background:#111;">
+              <img src="guide_capital.png" alt="موقع رأس المال في البوت" style="max-height:85px; width:auto; display:block;">
+            </div>
+            <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(0)">
+              <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>👁️ أرني مكانه بالحاسبة</span>
+            </button>
           </div>
-          <div class="g-feat-card">
-            <div class="fc-title">📈 ٢. رسم بياني تفاعلي</div>
-            <div class="fc-desc">يوضح الفرق بين نمو رأس المال لو أعدت الاستثمار ولو سحبت بدون إعادة استثمار للمال (المس المنحنى لرؤية أرقام كل يوم).</div>
+        </div>
+
+        <div class="g-step-item" style="margin-bottom:.65rem">
+          <div class="g-step-num">2</div>
+          <div class="g-step-text" style="width:100%">
+            <b>الرقم المستهدف باللون المميز (Target):</b><br>
+            هذا هو هدفك؛ عندما تصل أرباحك في البوت لهذا الرقم تسحبها فوراً وتعيد إيداعها.
+            <div style="margin-top:4px">
+              <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(1)">
+                <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>👁️ أرني مكانه بالحاسبة</span>
+              </button>
+            </div>
           </div>
-          <div class="g-feat-card">
-            <div class="fc-title">📋 ٣. جدول دليل الدورات</div>
-            <div class="fc-desc">يظهر لك نمو رأس مالك لكل دورة بالتفصيل مع الأرباح الصافية بعد الرسوم.</div>
+        </div>
+
+        <div class="g-step-item" style="margin-bottom:0">
+          <div class="g-step-num">3</div>
+          <div class="g-step-text" style="width:100%">
+            <b>العائد اليومي (اختياري):</b><br>
+            لا يغير الرقم المستهدف إطلاقاً، بل يقدر لك فقط المدة الزمنية المتوقعة لاكتمال الدورة.
+            <div style="margin-top:4px">
+              <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(2)">
+                <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>👁️ أرني مكانه بالحاسبة</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Slide 4 -->
-      <div class="guide-slide" data-slide="4" style="justify-content:center;align-items:center;text-align:center;gap:.8rem;padding:.4rem 0">
-        <div style="text-align:center;padding:.2rem 0">
-          <div style="font-size:2.4rem;margin-bottom:.4rem">🎯</div>
-          <div style="font-size:1.1rem;font-weight:700;color:var(--c1);margin-bottom:.4rem">أنت الآن جاهز لتعظيم أرباحك!</div>
-          <p style="font-size:.84rem;color:var(--ink-dim);line-height:1.65;margin:0 auto;max-width:420px">
-            اتبع نقطة التدوير دائماً لتجعل قوة الفائدة المركبة تضاعف رأس مالك بأعلى كفاءة رياضية ممكنة.
+      <div class="guide-slide" data-slide="4" style="justify-content:center">
+        <div style="text-align:center;margin-bottom:.65rem">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">⏱️ متابعة الدورة وما بعد السحب</div>
+          <div style="font-size:.8rem;color:var(--ink-dim);margin-top:2px">كيف تتابع أرباحك وتبدأ دورة جديدة صحيحة</div>
+        </div>
+
+        <div class="g-step-item" style="margin-bottom:.65rem">
+          <div class="g-step-num">📊</div>
+          <div class="g-step-text" style="width:100%">
+            <b>متابعة التقدم (كم باقي؟):</b><br>
+            اكتب أرباحك الحالية في خانة <b>"الأرباح المتراكمة الآن"</b> ويظهر لك فوراً كم تبقّى لك من أرباح ووقت للوصول للهدف.
+            <div style="margin-top:4px">
+              <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(3)">
+                <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>👁️ أرني مكانه بالحاسبة</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="g-step-item" style="margin-bottom:.65rem;background:color-mix(in srgb, var(--c1) 8%, transparent);border-color:color-mix(in srgb, var(--c1) 30%, transparent)">
+          <div class="g-step-num">🔄</div>
+          <div class="g-step-text" style="width:100%">
+            <b style="color:var(--c1)">ماذا تفعل بعد إعادة الإيداع في البوت؟</b><br>
+            بعد سحب الأرباح وإيداعها في البوت ليصبح رأس مالك أكبر: عد للحاسبة وضع رأس مالك الجديد في خانة <b>«رأس المال الحالي»</b> لتبدأ الدورة التالية بالحسابات الدقيقة.
+          </div>
+        </div>
+
+        <div class="g-faq-box" style="margin-top:0">
+          <div class="g-faq-q">❓ أيهما أفضل: السحب قبل الهدف أم بعده؟</div>
+          <div class="g-faq-a">التأخر وتجاوز الهدف آمن جداً، لكن الاستعجال والسحب <b>مبكراً قبل الهدف</b> يلتهم نسبة كبيرة من أرباحك في الرسوم الثابتة ($1).</div>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="guide-slide" data-slide="5" style="justify-content:center;align-items:center;text-align:center;gap:.65rem;padding:.3rem 0">
+        <div style="text-align:center">
+          <div style="font-size:2.2rem;margin-bottom:.2rem">🎯</div>
+          <div style="font-size:1.08rem;font-weight:700;color:var(--c1);margin-bottom:.2rem">أنت الآن جاهز لتعظيم أرباحك!</div>
+          <p style="font-size:.82rem;color:var(--ink-dim);line-height:1.6;margin:0 auto;max-width:420px">
+            اتبع نقطة التدوير دائماً لتجعل قوة الأرباح المركبة تضاعف رأس مالك بأعلى كفاءة رياضية ممكنة.
           </p>
         </div>
 
-        <div class="g-credits-box" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.85rem 1rem;background:color-mix(in srgb, var(--c1) 6%, rgba(255,255,255,.02));border:1px solid color-mix(in srgb, var(--c1) 25%, var(--line));border-radius:var(--r-md);margin-top:.4rem">
-          <div style="font-size:.78rem;color:var(--ink-dim)">✍️ إعداد وشرح الدليل</div>
-          <div style="font-size:1.05rem;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:.5rem;justify-content:center;flex-wrap:wrap">
+        <div class="g-feature-grid" style="width:100%;text-align:right">
+          <div class="g-feat-card" style="padding:.55rem .75rem">
+            <div class="fc-title" style="font-size:.8rem">🚀 ١. رحلة المضاعفة</div>
+            <div class="fc-desc" style="font-size:.74rem">تظهر لك متى ستضاعف مالك (×2 ، ×4 ، ×8) والوقت المقدر بالأيام والشهور.</div>
+          </div>
+          <div class="g-feat-card" style="padding:.55rem .75rem">
+            <div class="fc-title" style="font-size:.8rem">📈 ٢. رسم بياني تفاعلي</div>
+            <div class="fc-desc" style="font-size:.74rem">يوضح الفرق الهائل بين نمو رأس المال مع إعادة التدوير وبدونها.</div>
+          </div>
+        </div>
+
+        <div class="g-credits-box" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.7rem 1rem;background:color-mix(in srgb, var(--c1) 6%, rgba(255,255,255,.02));border:1px solid color-mix(in srgb, var(--c1) 25%, var(--line));border-radius:var(--r-md);margin-top:.2rem">
+          <div style="font-size:.75rem;color:var(--ink-dim)">✍️ إعداد وشرح الدليل</div>
+          <div style="font-size:1.02rem;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:.5rem;justify-content:center;flex-wrap:wrap">
             <span style="color:var(--c1)">حسام الأحمدي</span>
-            <a href="https://t.me/x_a_l_p_h_a" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:color-mix(in srgb, var(--c1) 18%, transparent);border:1px solid color-mix(in srgb, var(--c1) 40%, transparent);color:var(--c1);font-size:0.8rem;font-weight:700;text-decoration:none;font-family:var(--font-num);direction:ltr;transition:all .2s">
-              <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.05-.49-.83-.27-1.49-.42-1.43-.88.03-.24.38-.49 1.03-.75 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.65-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
+            <a href="https://t.me/x_a_l_p_h_a" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:color-mix(in srgb, var(--c1) 18%, transparent);border:1px solid color-mix(in srgb, var(--c1) 40%, transparent);color:var(--c1);font-size:0.78rem;font-weight:700;text-decoration:none;font-family:var(--font-num);direction:ltr">
+              <svg style="width:11px;height:11px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.05-.49-.83-.27-1.49-.42-1.43-.88.03-.24.38-.49 1.03-.75 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.65-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
               @x_a_l_p_h_a
             </a>
           </div>
@@ -642,6 +745,7 @@ canvas{display:block}
         <span class="guide-dot" data-step="2"></span>
         <span class="guide-dot" data-step="3"></span>
         <span class="guide-dot" data-step="4"></span>
+        <span class="guide-dot" data-step="5"></span>
       </div>
       <div style="display:flex;gap:.4rem">
         <button type="button" class="guide-btn secondary" id="guide-prev-btn" style="display:none">السابق</button>
@@ -678,7 +782,10 @@ canvas{display:block}
   <!-- Floating Glassmorphism Tour Card -->
   <div class="tour-card" id="tour-card">
     <div class="tour-card-head">
-      <span class="tour-card-step" id="tour-step-badge">الخطوة 1 من 3</span>
+      <div style="display:flex;align-items:center;gap:.4rem">
+        <span class="tour-card-step" id="tour-step-badge">الخطوة 1 من 4</span>
+        <button type="button" class="tour-back-guide" id="tour-back-guide-btn" title="الرجوع للدليل">📖 الدليل</button>
+      </div>
       <button type="button" class="tour-card-close" id="tour-close-btn" aria-label="إغلاق الجولة">✕</button>
     </div>
     <div class="tour-card-title" id="tour-step-title"></div>
@@ -686,6 +793,7 @@ canvas{display:block}
     <div class="tour-card-foot">
       <div class="tour-card-dots">
         <span class="tour-dot on"></span>
+        <span class="tour-dot"></span>
         <span class="tour-dot"></span>
         <span class="tour-dot"></span>
       </div>
@@ -836,6 +944,7 @@ function calculate(){
   const r=Math.max(0,getNum('rate',0))/100;
   const F=FEE;
   const T=threshold(C,F),net=T-F,feeRatio=T>0?(F/T)*100:0,days=optDays(C,r,F);
+  document.body.classList.toggle('rate-empty', r <= 0);
 
   // guard: capital too small
   const cycleNet=r>0?(C*r*days-F):0;const tooSmall=r>0&&cycleNet<=0;const wb=$('warn-banner');
@@ -1080,7 +1189,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 // ===== Guide Controller =====
 let currentGuideSlide = 1;
-const totalGuideSlides = 4;
+const totalGuideSlides = 5;
 
 function showGuideSlide(n) {
   currentGuideSlide = Math.max(1, Math.min(n, totalGuideSlides));
@@ -1175,6 +1284,63 @@ if (btnNewCycle) {
   });
 }
 
+// ===== Focus Rate Input when Rate is Empty =====
+function focusRateInput() {
+  const rateInput = $('rate');
+  if (rateInput) {
+    rateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      rateInput.focus();
+      try { rateInput.select(); } catch(e) {}
+      const field = $('step-target-rate');
+      if (field) {
+        field.style.transition = 'box-shadow 0.3s ease';
+        field.style.boxShadow = '0 0 0 2px var(--c1)';
+        setTimeout(() => { field.style.boxShadow = ''; }, 1200);
+      }
+    }, 250);
+  }
+}
+
+function isRateEmpty() {
+  return getNum('rate', 0) <= 0;
+}
+
+// Click on empty-rate message areas to focus the rate input
+document.querySelectorAll('.stat-tile').forEach(el => {
+  el.addEventListener('click', () => {
+    if (isRateEmpty()) focusRateInput();
+  });
+});
+
+const csiDays = document.querySelector('.csi.go');
+if (csiDays) {
+  csiDays.addEventListener('click', () => {
+    if (isRateEmpty()) focusRateInput();
+  });
+}
+
+const journeyBox = $('journey');
+if (journeyBox) {
+  journeyBox.addEventListener('click', () => {
+    if (isRateEmpty()) focusRateInput();
+  });
+}
+
+const chartCv = $('chart');
+if (chartCv) {
+  chartCv.addEventListener('click', () => {
+    if (isRateEmpty()) focusRateInput();
+  });
+}
+
+const heroSub = $('hero-sub');
+if (heroSub) {
+  heroSub.addEventListener('click', () => {
+    if (isRateEmpty()) focusRateInput();
+  });
+}
+
 // Auto open on first visit
 window.addEventListener('DOMContentLoaded', () => {
   try {
@@ -1185,29 +1351,55 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===== Precision Vector Interactive Tour Controller =====
+let returnGuideSlide = 1;
+let isShowMeMode = false;
+
+function jumpToShowMe(step = 0) {
+  returnGuideSlide = currentGuideSlide || 1;
+  isShowMeMode = true;
+  closeGuide();
+  startTour(step);
+}
+
+function exitShowMeAndReturn() {
+  closeTour();
+  openGuide(returnGuideSlide || 1);
+}
+
 const TOUR_STEPS = [
   {
     targetId: 'step-target-principal',
     title: '💵 ١. رأس المال الأساسي',
-    desc: 'ضع هنا رأس مالك بالدولار. <br><b style="color:var(--c1);display:block;margin-top:6px">⚠️ تنبيه:</b> عند حدوث أي تغيير في رأس مالك (سواء بزيادته عبر إعادة تدوير الأرباح والإيداع، أو نقصانه بالسحب)، يجب أن تعود لتحديث الرقم هنا لتبدأ دورة جديدة.',
-    badge: 'الخطوة 1 من 3'
+    desc: 'ضع هنا رأس مالك بالدولار (الرقم المنسوخ من تحت كلمة CAPITAL في البوت). <br><b style="color:var(--c1);display:block;margin-top:6px">⚠️ تنبيه:</b> عند حدوث أي تغيير في رأس مالك (إيداع أو سحب أو إعادة تدوير)، حدّث هذا الرقم لتبدأ دورة جديدة صحيحة.',
+    badge: 'الخطوة 1 من 4'
   },
   {
     targetId: 'result-hero-card',
     title: '🎯 ٢. الرقم المستهدف لإعادة التدوير',
-    desc: 'هذا هو <span class="hl">الحد الأمثل</span> لأرباحك؛ عند بلوغه تقوم بسحب الأرباح وضمّها للمال لتسريع وتيرة التضاعف وتفادي هدر الرسوم.',
-    badge: 'الخطوة 2 من 3'
+    desc: 'هذا هو <span class="hl">الرقم الذهبي</span>؛ عندما تصل أرباحك في البوت لهذا الرقم تسحبها فوراً وتعيد إيداعها لتنضم لرأس المال وتسحق أثر الرسوم.',
+    badge: 'الخطوة 2 من 4'
+  },
+  {
+    targetId: 'step-target-rate',
+    title: '📈 ٣. العائد اليومي التقريبي (اختياري)',
+    desc: 'خانة اختيارية تفيدك في تقدير الوقت والأيام المتوقعة لإتمام الدورة، ولا تؤثر إطلاقاً على حجم الرقم المستهدف رياضياً.',
+    badge: 'الخطوة 3 من 4'
   },
   {
     targetId: 'step-target-profit',
-    title: '⏱️ ٣. متابعة أرباح الدورة',
+    title: '⏱️ ٤. متابعة أرباح الدورة',
     desc: 'اكتب أرباحك الحالية في أي وقت لتعرف بدقة كم تبقّى لك من أرباح ووقت باليوم للوصول للهدف وإعادة التدوير.',
-    badge: 'الخطوة 3 من 3'
+    badge: 'الخطوة 4 من 4'
   }
 ];
 
 let tourActive = false;
 let tourStepIdx = 0;
+
+function getTourTarget(s) {
+  let el = $(s.targetId);
+  return el || $('step-target-principal');
+}
 
 function startTour(step = 0) {
   closeGuide();
@@ -1223,6 +1415,7 @@ function startTour(step = 0) {
 
 function closeTour() {
   tourActive = false;
+  isShowMeMode = false;
   const overlay = $('tour-overlay');
   if (overlay) overlay.classList.remove('active');
   window.removeEventListener('resize', updateTourPositions);
@@ -1231,25 +1424,50 @@ function closeTour() {
 
 function renderTourStep(idx) {
   if (idx < 0 || idx >= TOUR_STEPS.length) {
-    closeTour();
+    if (isShowMeMode) exitShowMeAndReturn();
+    else closeTour();
     return;
   }
   tourStepIdx = idx;
   const s = TOUR_STEPS[idx];
-  $('tour-step-badge').textContent = s.badge;
-  $('tour-step-title').innerHTML = s.title;
-  $('tour-step-desc').innerHTML = s.desc;
   
-  document.querySelectorAll('.tour-dot').forEach((d, i) => {
-    d.classList.toggle('on', i === idx);
-  });
-  
+  const stepBadge = $('tour-step-badge');
+  const stepTitle = $('tour-step-title');
+  const stepDesc = $('tour-step-desc');
+  const closeBtn = $('tour-close-btn');
+  const backGuideBtn = $('tour-back-guide-btn');
+  const dotsWrap = document.querySelector('.tour-card-dots');
   const prevBtn = $('tour-prev-btn');
   const nextBtn = $('tour-next-btn');
-  if (prevBtn) prevBtn.style.display = idx === 0 ? 'none' : 'inline-block';
-  if (nextBtn) nextBtn.textContent = idx === TOUR_STEPS.length - 1 ? 'إنهاء وفهمت 🚀' : 'التالي ←';
   
-  const target = $(s.targetId);
+  if (stepBadge) stepBadge.textContent = isShowMeMode ? 'معاينة الحقل 🎯' : s.badge;
+  if (stepTitle) stepTitle.innerHTML = s.title;
+  if (stepDesc) stepDesc.innerHTML = s.desc;
+  
+  if (isShowMeMode) {
+    if (closeBtn) closeBtn.style.display = 'none';
+    if (backGuideBtn) backGuideBtn.style.display = 'none';
+    if (dotsWrap) dotsWrap.style.display = 'none';
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) {
+      nextBtn.textContent = 'حسناً، العودة للشرح 📖';
+      nextBtn.style.width = '100%';
+    }
+  } else {
+    if (closeBtn) closeBtn.style.display = 'grid';
+    if (backGuideBtn) backGuideBtn.style.display = 'inline-block';
+    if (dotsWrap) dotsWrap.style.display = 'flex';
+    document.querySelectorAll('.tour-dot').forEach((d, i) => {
+      d.classList.toggle('on', i === idx);
+    });
+    if (prevBtn) prevBtn.style.display = idx === 0 ? 'none' : 'inline-block';
+    if (nextBtn) {
+      nextBtn.textContent = idx === TOUR_STEPS.length - 1 ? 'إنهاء وفهمت 🚀' : 'التالي ←';
+      nextBtn.style.width = 'auto';
+    }
+  }
+  
+  const target = getTourTarget(s);
   if (!target) return;
   
   // Intelligent scroll centering based on target size
@@ -1266,7 +1484,7 @@ function renderTourStep(idx) {
 function updateTourPositions() {
   if (!tourActive) return;
   const s = TOUR_STEPS[tourStepIdx];
-  const target = $(s.targetId);
+  const target = getTourTarget(s);
   const spotlight = $('tour-spotlight');
   const card = $('tour-card');
   const pointer = $('tour-pointer-wrap');
@@ -1321,28 +1539,58 @@ function updateTourPositions() {
 }
 
 const btnStartInteractive = $('btn-start-interactive');
-if (btnStartInteractive) btnStartInteractive.addEventListener('click', () => startTour(0));
+if (btnStartInteractive) btnStartInteractive.addEventListener('click', () => {
+  isShowMeMode = false;
+  startTour(0);
+});
+
+const tourBackGuideBtn = $('tour-back-guide-btn');
+if (tourBackGuideBtn) tourBackGuideBtn.addEventListener('click', exitShowMeAndReturn);
 
 const tourCloseBtn = $('tour-close-btn');
 if (tourCloseBtn) tourCloseBtn.addEventListener('click', closeTour);
 
 const tourPrevBtn = $('tour-prev-btn');
-if (tourPrevBtn) tourPrevBtn.addEventListener('click', () => renderTourStep(tourStepIdx - 1));
+if (tourPrevBtn) tourPrevBtn.addEventListener('click', () => {
+  if (!isShowMeMode) renderTourStep(tourStepIdx - 1);
+});
 
 const tourNextBtn = $('tour-next-btn');
 if (tourNextBtn) tourNextBtn.addEventListener('click', () => {
-  if (tourStepIdx < TOUR_STEPS.length - 1) {
-    renderTourStep(tourStepIdx + 1);
+  if (isShowMeMode) {
+    exitShowMeAndReturn();
   } else {
-    closeTour();
+    if (tourStepIdx < TOUR_STEPS.length - 1) {
+      renderTourStep(tourStepIdx + 1);
+    } else {
+      closeTour();
+    }
   }
 });
 
+const tourOverlay = $('tour-overlay');
+if (tourOverlay) {
+  tourOverlay.addEventListener('click', (e) => {
+    if (e.target === tourOverlay || e.target === $('tour-spotlight') || e.target === $('tour-pointer-wrap')) {
+      if (isShowMeMode) {
+        exitShowMeAndReturn();
+      } else {
+        closeTour();
+      }
+    }
+  });
+}
+
 document.addEventListener('keydown', (e) => {
   if (!tourActive) return;
-  if (e.key === 'Escape') closeTour();
-  if (e.key === 'ArrowRight') renderTourStep(tourStepIdx + 1);
-  if (e.key === 'ArrowLeft') renderTourStep(tourStepIdx - 1);
+  if (e.key === 'Escape') {
+    if (isShowMeMode) exitShowMeAndReturn();
+    else closeTour();
+  }
+  if (!isShowMeMode) {
+    if (e.key === 'ArrowRight') renderTourStep(tourStepIdx + 1);
+    if (e.key === 'ArrowLeft') renderTourStep(tourStepIdx - 1);
+  }
 });
 </script>
 </body>
