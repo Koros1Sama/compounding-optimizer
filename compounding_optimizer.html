@@ -72,11 +72,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
 .wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:clamp(1.25rem,4vw,3rem) clamp(1rem,4vw,2rem) 4rem}
 
-/* ===== theme switcher ===== */
-.themes{position:fixed;top:clamp(.8rem,3vw,1.2rem);left:clamp(.8rem,3vw,1.2rem);z-index:50;display:flex;gap:.4rem;padding:.4rem .5rem;background:rgba(10,12,18,.6);border:1px solid var(--line);border-radius:50px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.th{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:var(--sc);cursor:pointer;padding:0;transition:transform .35s var(--ease),border-color .35s var(--ease)}
+/* ===== top nav & theme switcher ===== */
+.top-nav{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:clamp(1rem,3vw,1.6rem);flex-wrap:wrap}
+.themes{display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .55rem;background:rgba(10,12,18,.75);border:1px solid var(--line-2);border-radius:50px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.th{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:var(--sc);cursor:pointer;padding:0;transition:transform .35s var(--ease),border-color .35s var(--ease)}
 .th:hover{transform:scale(1.18)}
-.th.on{border-color:#fff;transform:scale(1.12);box-shadow:0 0 10px var(--sc)}
+.th.on{border-color:#fff;transform:scale(1.15);box-shadow:0 0 10px var(--sc)}
+
+/* Force English/Western Numerals Everywhere */
+input, .bv, .tval, .cv, .jv, td, .formula, .pp, [data-num], .sn, .stat-tile .bv, .chip .cv, .csi .cv {
+  font-family: var(--font-num), 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-feature-settings: "tnum" 1, "lnum" 1 !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  unicode-bidi: isolate;
+  direction: ltr !important;
+}
 
 /* ===== header ===== */
 .eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .9rem;background:var(--glass);border:1px solid var(--line);border-radius:50px;font-size:.72rem;font-weight:500;letter-spacing:.12em;color:var(--c1);text-transform:uppercase;backdrop-filter:blur(12px)}
@@ -223,17 +233,19 @@ canvas{display:block}
 <div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 <div class="grain"></div>
 
-<!-- theme switcher -->
-<div class="themes" role="group" aria-label="الثيمات">
-  <button class="th" data-t="emerald" style="--sc:#34d399" aria-label="زمردي"></button>
-  <button class="th" data-t="aurum" style="--sc:#fbbf24" aria-label="ذهبي"></button>
-  <button class="th" data-t="nebula" style="--sc:#a78bfa" aria-label="بنفسجي"></button>
-  <button class="th" data-t="azure" style="--sc:#38bdf8" aria-label="أزرق"></button>
-</div>
-
 <div class="wrap">
-  <header class="reveal center" style="margin-bottom:clamp(2rem,5vw,3rem)">
+  <!-- Top Navigation with Eyebrow and Themes -->
+  <div class="top-nav reveal">
     <span class="eyebrow"><span class="dot"></span> محرّك الثروة المضاعفة</span>
+    <div class="themes" role="group" aria-label="الثيمات">
+      <button class="th on" data-t="emerald" style="--sc:#34d399" aria-label="زمردي" title="زمردي"></button>
+      <button class="th" data-t="aurum" style="--sc:#fbbf24" aria-label="ذهبي" title="ذهبي"></button>
+      <button class="th" data-t="nebula" style="--sc:#a78bfa" aria-label="بنفسجي" title="بنفسجي"></button>
+      <button class="th" data-t="azure" style="--sc:#38bdf8" aria-label="أزرق" title="أزرق"></button>
+    </div>
+  </div>
+
+  <header class="reveal center" style="margin-bottom:clamp(1.6rem,4vw,2.5rem)">
     <h1 class="deco">حاسبة إعادة التدوير المثلى</h1>
     <p class="lead" style="margin:0 auto">أدخل رأس مالك واحصل على اللحظة الدقيقة لإعادة ضمّ أرباحك — معادلة مُثبَتة رياضياً، مستقلة عن تقلّب النسبة اليومية.</p>
   </header>
@@ -247,13 +259,13 @@ canvas{display:block}
         <div class="head"><div class="ic"><svg class="icn"><use href="#i-sliders"/></svg></div><div class="section-title">بياناتك</div></div>
         <div class="field">
           <label><span>رأس المال الحالي</span><span class="u">بالدولار</span></label>
-          <div class="inp"><span class="ik"><svg class="icn"><use href="#i-wallet"/></svg></span><input type="number" id="principal" value="1000" min="1" step="1"></div>
+          <div class="inp"><span class="ik"><svg class="icn"><use href="#i-wallet"/></svg></span><input type="text" inputmode="decimal" id="principal" value="1000" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
         </div>
         <div class="divider"></div>
         <div class="hint"><b>اختياري</b> — لتقدير الأيام والزمن فقط، ولا يغيّر الحد الأمثل (مستقل عن النسبة رياضياً)</div>
         <div class="field" style="margin-bottom:0">
           <label><span>العائد اليومي التقريبي</span><span class="tag-opt">اختياري</span></label>
-          <div class="inp"><span class="ik"><svg class="icn"><use href="#i-trending"/></svg></span><input type="number" id="rate" value="1.10" min="0.1" max="10" step="0.01"></div>
+          <div class="inp"><span class="ik"><svg class="icn"><use href="#i-trending"/></svg></span><input type="text" inputmode="decimal" id="rate" value="1.10" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
         </div>
       </div></div>
     </div>
@@ -279,7 +291,7 @@ canvas{display:block}
           <div class="col-5">
             <div class="field" style="margin-bottom:0">
               <label><span>الأرباح المتراكمة الآن</span><span class="u">$</span></label>
-              <div class="inp"><span class="ik"><svg class="icn"><use href="#i-dollar"/></svg></span><input type="number" id="current-profit" value="0" min="0" step="0.01"></div>
+              <div class="inp"><span class="ik"><svg class="icn"><use href="#i-dollar"/></svg></span><input type="text" inputmode="decimal" id="current-profit" value="0" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
             </div>
             <div class="hint" style="margin-top:.9rem"><b>أودعت زيادة؟</b> حدّث رأس المال بالمجموع الجديد واترك الأرباح كما هي — يحسب الباقي على الأساس الجديد تلقائياً.</div>
           </div>
@@ -388,9 +400,38 @@ canvas{display:block}
 const $=id=>document.getElementById(id);
 const FEE=1; // رسوم ثابتة $1 — عدّلها من هنا فقط
 const INPUT_KEYS=['principal','rate','current-profit'];
-const onInput=()=>document.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{calculate();saveData();}));
-function saveData(){const o={};INPUT_KEYS.forEach(k=>{const e=$(k);if(e)o[k]=e.value;});try{localStorage.setItem('co-data',JSON.stringify(o));}catch(e){}}
-function loadData(){try{const o=JSON.parse(localStorage.getItem('co-data')||'{}');INPUT_KEYS.forEach(k=>{if(o[k]!=null&&$(k))$(k).value=o[k];});}catch(e){}}
+
+function toEnglishDigits(str){
+  if(str==null)return'';
+  const ar=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const fa=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  let s=String(str);
+  for(let i=0;i<10;i++){s=s.replaceAll(ar[i],i).replaceAll(fa[i],i);}
+  return s.replace(/[^0-9.]/g,'');
+}
+
+function getNum(id,def=0){
+  const el=$(id);if(!el)return def;
+  const clean=toEnglishDigits(el.value);
+  if(el.value!==clean){el.value=clean;}
+  const val=parseFloat(clean);
+  return isNaN(val)?def:val;
+}
+
+const onInput=()=>document.querySelectorAll('input').forEach(i=>{
+  const handler=()=>{
+    const clean=toEnglishDigits(i.value);
+    if(i.value!==clean){i.value=clean;}
+    calculate();saveData();
+  };
+  i.addEventListener('input',handler);
+  i.addEventListener('keyup',handler);
+  i.addEventListener('change',handler);
+  i.addEventListener('paste',()=>setTimeout(handler,10));
+});
+
+function saveData(){const o={};INPUT_KEYS.forEach(k=>{const e=$(k);if(e)o[k]=toEnglishDigits(e.value);});try{localStorage.setItem('co-data',JSON.stringify(o));}catch(e){}}
+function loadData(){try{const o=JSON.parse(localStorage.getItem('co-data')||'{}');INPUT_KEYS.forEach(k=>{if(o[k]!=null&&$(k))$(k).value=toEnglishDigits(o[k]);});}catch(e){}}
 
 // ===== themes =====
 const THEMES=['emerald','aurum','nebula','azure'];
@@ -407,13 +448,13 @@ function simulate(C0,r,F,days){if(r<=0)return[{day:0,capital:C0},{day,capital:C0
 function projectCycles(C0,r,F,max){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F),d=r>0?optDays(C,r,F):0,p=r>0?C*r*d:0,net=r>0?p-F:0,nC=C+net;tot+=d;out.push({i,C,T,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(C>C0*60||nC<=out[out.length-1].C+0.001)break;}return out;}
 const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmt0=n=>'$'+Math.round(n).toLocaleString('en-US');
-const arDays=d=>{if(d<=0)return'—';const r=Math.round(d);return r===1?'يوم':r===2?'يومين':r<=10?r+' أيام':r+' يوم';};
+const arDays=d=>{if(d<=0)return'—';const r=Math.round(d);return r===1?'يوم واحد (1)':r===2?'يومين (2)':r<=10?r+' أيام':r+' يوم';};
 
-function countUp(el,target,isMoney=true,dec=0){const start=parseFloat(el.dataset.v||0)||0,dur=900,t0=performance.now();el.dataset.v=target;const tick=t=>{const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,3);const v=start+(target-start)*e;el.textContent=isMoney?(dec?'$'+v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'$'+Math.round(v).toLocaleString('en-US')):Math.round(v);if(p<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}
+function countUp(el,target,isMoney=true,dec=0){const start=parseFloat(toEnglishDigits(el.dataset.v||0))||0,dur=800,t0=performance.now();el.dataset.v=target;const tick=t=>{const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,3);const v=start+(target-start)*e;el.textContent=isMoney?(dec?'$'+v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'$'+Math.round(v).toLocaleString('en-US')):Math.round(v).toLocaleString('en-US');if(p<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}
 
 function calculate(){
-  const C=Math.max(.01,parseFloat($('principal').value)||0);
-  const r=Math.max(0,(parseFloat($('rate').value)||0))/100;
+  const C=Math.max(.01,getNum('principal',0));
+  const r=Math.max(0,getNum('rate',0))/100;
   const F=FEE;
   const T=threshold(C,F),net=T-F,feeRatio=T>0?(F/T)*100:0,days=optDays(C,r,F);
 
@@ -430,7 +471,7 @@ function calculate(){
   $('chip-feeratio').textContent=feeRatio.toFixed(1)+'%';
 
   // tracker
-  const cur=Math.max(0,parseFloat($('current-profit').value)||0);
+  const cur=Math.max(0,getNum('current-profit',0));
   const rem=Math.max(0,T-cur),dp=C*r,drem=(r>0&&rem>0)?rem/dp:0;
   const prog=T>0?Math.min(100,cur/T*100):0,reached=cur>=T&&T>0;
   $('prog-pct').textContent=prog.toFixed(0)+'%';
