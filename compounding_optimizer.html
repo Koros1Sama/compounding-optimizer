@@ -332,7 +332,7 @@ canvas{display:block}
     <div class="col-5">
       <div class="shell"><div class="core">
         <div class="head"><div class="ic"><svg class="icn"><use href="#i-sliders"/></svg></div><div class="section-title">بياناتك</div></div>
-        <div class="field">
+        <div class="field" id="tour-step-1">
           <label><span>رأس المال الحالي</span><span class="u">بالدولار</span></label>
           <div class="inp"><span class="ik"><svg class="icn"><use href="#i-wallet"/></svg></span><input type="text" inputmode="decimal" id="principal" value="1000" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
         </div>
@@ -371,7 +371,7 @@ canvas{display:block}
         <div class="head"><div class="ic"><svg class="icn"><use href="#i-clock"/></svg></div><div><div class="section-title">حالة دورتي — كم باقي؟</div><div class="section-sub">شوف أرباحك المتراكمة على المنصة واكتبها هنا</div></div></div>
         <div class="bento" style="margin-top:.4rem">
           <div class="col-5">
-            <div class="field" style="margin-bottom:0">
+            <div class="field" id="tour-step-3" style="margin-bottom:0">
               <label><span>الأرباح المتراكمة الآن</span><span class="u">$</span></label>
               <div class="inp"><span class="ik"><svg class="icn"><use href="#i-dollar"/></svg></span><input type="text" inputmode="decimal" id="current-profit" value="0" dir="ltr" autocomplete="off" autocorrect="off" spellcheck="false"></div>
             </div>
@@ -570,6 +570,7 @@ canvas{display:block}
         <div class="g-credits-box">
           <div class="g-credits-author" style="font-size:1rem;margin-bottom:0">✍️ إعداد وشرح الدليل: <b style="color:var(--c1);font-weight:700">حسام الأحمدي</b></div>
         </div>
+        <button type="button" class="guide-btn primary" id="btn-start-interactive" style="width:100%;margin-top:.8rem;padding:.65rem;font-size:.9rem;background:var(--c1);color:#04121a;box-shadow:0 6px 20px color-mix(in srgb,var(--c1) 40%,transparent);border:none;border-radius:var(--r-sm);cursor:pointer;font-weight:700;font-family:var(--font-ar)">👇 ابدأ جولة تفاعلية حية على الشاشة</button>
       </div>
     </div>
 
@@ -588,6 +589,24 @@ canvas{display:block}
     </div>
   </div>
 </div>
+
+<!-- ===== INTERACTIVE TOUR ===== -->
+<div id="tour-backdrop" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9000;display:none;opacity:0;transition:opacity .3s"></div>
+<div id="tour-popover" style="position:absolute;z-index:9001;display:none;flex-direction:column;align-items:center;transition:all .3s ease;width:260px;pointer-events:auto;opacity:0">
+  <div style="font-size:2.5rem;animation:tour-bounce 1s infinite;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5))">👇</div>
+  <div style="background:var(--c1);color:#04121a;padding:1rem;border-radius:var(--r-md);text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.5);position:relative;margin-top:5px;width:100%">
+    <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);border-width:0 6px 6px 6px;border-style:solid;border-color:transparent transparent var(--c1) transparent"></div>
+    <div id="tour-text" style="font-size:.85rem;line-height:1.6;font-weight:700;margin-bottom:12px;font-family:var(--font-ar)"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span id="tour-step-counter" style="font-size:.75rem;opacity:.7;font-family:var(--font-num);font-weight:700"></span>
+      <button type="button" id="tour-next-btn" style="background:#04121a;color:var(--c1);border:none;padding:.4rem 1rem;border-radius:50px;font-weight:700;font-family:var(--font-ar);cursor:pointer;font-size:.8rem">التالي</button>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes tour-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.tour-highlight{position:relative!important;z-index:9002!important;box-shadow:0 0 0 4px var(--c1),0 15px 40px rgba(0,0,0,0.5)!important;background:var(--gb)!important;border-radius:var(--r-md);pointer-events:none}
+</style>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -1080,6 +1099,92 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
 });
+// ===== Interactive Tour Logic =====
+const tourSteps = [
+  { id: 'tour-step-1', text: 'أولاً: اكتب هنا إجمالي رأس مالك الحالي بدقة.' },
+  { id: 'result-hero-card', text: 'ثانياً: هذا هو الرقم الذهبي! اسحب أرباحك فور وصولها لهذا الرقم لتضمن أسرع نمو ممكن.' },
+  { id: 'tour-step-3', text: 'أخيراً: هنا يمكنك كتابة أرباحك الحالية في المنصة لتعرف كم يتبقى لك للوصول للهدف.' }
+];
+let currentTourStep = 0;
+let activeTourElement = null;
+
+function startInteractiveTour() {
+  closeGuide();
+  const backdrop = $('tour-backdrop');
+  const popover = $('tour-popover');
+  if(!backdrop || !popover) return;
+  
+  backdrop.style.display = 'block';
+  popover.style.display = 'flex';
+  setTimeout(() => {
+    backdrop.style.opacity = '1';
+    popover.style.opacity = '1';
+  }, 10);
+  
+  currentTourStep = 0;
+  showInteractiveStep();
+}
+
+function showInteractiveStep() {
+  if (activeTourElement) {
+    activeTourElement.classList.remove('tour-highlight');
+  }
+  
+  if (currentTourStep >= tourSteps.length) {
+    endInteractiveTour();
+    return;
+  }
+  
+  const step = tourSteps[currentTourStep];
+  const el = $(step.id);
+  if (!el) {
+    currentTourStep++;
+    showInteractiveStep();
+    return;
+  }
+  
+  activeTourElement = el;
+  el.classList.add('tour-highlight');
+  
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  $('tour-text').textContent = step.text;
+  $('tour-step-counter').textContent = `${currentTourStep + 1} / ${tourSteps.length}`;
+  $('tour-next-btn').textContent = currentTourStep === tourSteps.length - 1 ? 'فهمت، إنهاء' : 'التالي';
+  
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    const popover = $('tour-popover');
+    popover.style.top = (window.scrollY + rect.bottom + 12) + 'px';
+    popover.style.left = '50%';
+  }, 300); // Wait for scroll
+}
+
+function endInteractiveTour() {
+  const backdrop = $('tour-backdrop');
+  const popover = $('tour-popover');
+  if (activeTourElement) activeTourElement.classList.remove('tour-highlight');
+  activeTourElement = null;
+  
+  backdrop.style.opacity = '0';
+  popover.style.opacity = '0';
+  setTimeout(() => {
+    backdrop.style.display = 'none';
+    popover.style.display = 'none';
+  }, 300);
+}
+
+const btnStartInteractive = $('btn-start-interactive');
+if (btnStartInteractive) {
+  btnStartInteractive.addEventListener('click', startInteractiveTour);
+}
+const tourNextBtn = $('tour-next-btn');
+if (tourNextBtn) {
+  tourNextBtn.addEventListener('click', () => {
+    currentTourStep++;
+    showInteractiveStep();
+  });
+}
 </script>
 </body>
 </html>
