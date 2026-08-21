@@ -545,32 +545,91 @@ function clearChart(msg='أدخل العائد اليومي التقريبي أ�
   ctx.fillText(msg,rect.width/2,150);
 }
 
+let chartState = null;
+function drawChartFrame(st, hoverX) {
+  const { ctx, W, H, pad, cW, cH, col, opt, nc, mx, mn, rg, days, C0 } = st;
+  ctx.clearRect(0,0,W,H);
+  const xS = d => pad.l + (d/days)*cW, yS = v => pad.t + cH - ((v-mn)/rg)*cH;
+  
+  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=.5; ctx.fillStyle='#565f76'; ctx.font='10px Space Grotesk'; ctx.textAlign='right';
+  for(let i=0;i<=5;i++){ const y=pad.t+(cH/5)*i; ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke(); ctx.fillText('$'+Math.round(mx-(rg/5)*i).toLocaleString('en-US'),pad.l-8,y+3); }
+  
+  ctx.textAlign='center';
+  for(let i=0;i<=6;i++){ const dy=Math.round((days/6)*i); ctx.fillText(dy+'ي',xS(dy),H-pad.b+18); }
+  
+  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(251,191,36,.65)'; ctx.lineWidth=1.5; ctx.beginPath(); 
+  nc.forEach((p,i)=>i?ctx.lineTo(xS(p.day),yS(p.capital)):ctx.moveTo(xS(p.day),yS(p.capital))); ctx.stroke(); ctx.setLineDash([]);
+  
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH); grad.addColorStop(0,col.c1a); grad.addColorStop(1,col.c1b);
+  ctx.beginPath(); ctx.moveTo(xS(opt[0].day),yS(mn)); opt.forEach(p=>ctx.lineTo(xS(p.day),yS(p.capital))); ctx.lineTo(xS(opt[opt.length-1].day),yS(mn)); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+  
+  ctx.beginPath(); opt.forEach((p,i)=>i?ctx.lineTo(xS(p.day),yS(p.capital)):ctx.moveTo(xS(p.day),yS(p.capital)));
+  const lg=ctx.createLinearGradient(pad.l,0,W-pad.r,0); lg.addColorStop(0,col.c1); lg.addColorStop(1,col.c2); ctx.strokeStyle=lg; ctx.lineWidth=2.5; ctx.stroke();
+  
+  ctx.beginPath(); ctx.arc(xS(0),yS(C0),4,0,7); ctx.fillStyle=col.c2; ctx.fill();
+  const last=opt[opt.length-1]; ctx.beginPath(); ctx.arc(xS(last.day),yS(last.capital),4,0,7); ctx.fillStyle=col.c1; ctx.fill();
+  
+  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● مع التدوير المثالي',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير',pad.l+6,pad.t+28);
+
+  if (hoverX !== null && hoverX >= pad.l && hoverX <= W-pad.r) {
+    const ratio = Math.max(0, Math.min(1, (hoverX - pad.l) / cW));
+    const hoverDay = Math.round(ratio * days);
+    let optCap = C0, ncCap = C0 + (C0 * st.r * hoverDay);
+    for(let i=0; i<opt.length-1; i++) {
+        if(hoverDay >= opt[i].day && hoverDay <= opt[i+1].day) {
+            const dr = (hoverDay - opt[i].day) / (opt[i+1].day - opt[i].day || 1);
+            optCap = opt[i].capital + dr * (opt[i+1].capital - opt[i].capital); break;
+        }
+    }
+    if(hoverDay >= last.day) optCap = last.capital;
+    const hx = xS(hoverDay), hyOpt = yS(optCap), hyNc = yS(ncCap);
+    
+    ctx.beginPath(); ctx.moveTo(hx, pad.t); ctx.lineTo(hx, pad.t+cH); ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(hx, hyNc, 4.5, 0, 7); ctx.fillStyle='rgba(251,191,36,1)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(hx, hyOpt, 4.5, 0, 7); ctx.fillStyle=col.c1; ctx.fill();
+    
+    const tw = 120, th = 60, r = 6;
+    let tx = hx - tw/2;
+    if(tx < pad.l) tx = pad.l;
+    if(tx + tw > W-pad.r) tx = W-pad.r - tw;
+    let ty = Math.min(hyOpt, hyNc) - th - 12;
+    if(ty < pad.t) ty = Math.max(hyOpt, hyNc) + 12;
+    
+    ctx.fillStyle = 'rgba(15,23,42,0.95)';
+    ctx.beginPath(); ctx.moveTo(tx+r,ty); ctx.lineTo(tx+tw-r,ty); ctx.arcTo(tx+tw,ty,tx+tw,ty+r,r); ctx.lineTo(tx+tw,ty+th-r); ctx.arcTo(tx+tw,ty+th,tx+tw-r,ty+th,r); ctx.lineTo(tx+r,ty+th); ctx.arcTo(tx,ty+th,tx,ty+th-r,r); ctx.lineTo(tx,ty+r); ctx.arcTo(tx,ty,tx+r,ty,r); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.stroke();
+    
+    ctx.textAlign = 'center'; ctx.font = '11px IBM Plex Sans Arabic'; ctx.fillStyle = '#9aa3b8'; ctx.fillText('اليوم ' + hoverDay, tx + tw/2, ty + 18);
+    ctx.font = 'bold 12px Space Grotesk'; ctx.fillStyle = col.c1; ctx.fillText('$' + Math.round(optCap).toLocaleString('en-US'), tx + tw/2, ty + 36);
+    ctx.font = '11px Space Grotesk'; ctx.fillStyle = 'rgba(251,191,36,0.9)'; ctx.fillText('$' + Math.round(ncCap).toLocaleString('en-US'), tx + tw/2, ty + 50);
+  }
+}
+
 function drawChart(C0,r,F,days){
-  if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');return;}
+  if(r<=0){chartState=null;clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');return;}
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const col=chartColors();
-  ctx.clearRect(0,0,W,H);
   const opt=simulate(C0,r,F,days);
   const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)}];
   let mx=C0;opt.forEach(d=>{if(d.capital>mx)mx=d.capital;});nc.forEach(d=>{if(d.capital>mx)mx=d.capital;});
   const optFinal=opt[opt.length-1].capital;
-  if(optFinal<=C0*1.001){clearChart('العائد اليومي صغير جداً مقابل الرسوم — لا يوجد نمو كافٍ');return;}
-  const mn=C0,rg=(mx-mn)||1;
-  const xS=d=>pad.l+(d/days)*cW,yS=v=>pad.t+cH-((v-mn)/rg)*cH;
-  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=.5;ctx.fillStyle='#565f76';ctx.font='10px Space Grotesk';ctx.textAlign='right';
-  for(let i=0;i<=5;i++){const y=pad.t+(cH/5)*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillText('$'+Math.round(mx-(rg/5)*i),pad.l-8,y+3);}
-  ctx.textAlign='center';
-  for(let i=0;i<=6;i++){const dy=Math.round((days/6)*i);ctx.fillText(dy+'ي',xS(dy),H-pad.b+18);}
-  ctx.setLineDash([6,4]);ctx.strokeStyle='rgba(251,191,36,.65)';ctx.lineWidth=1.5;ctx.beginPath();nc.forEach((p,i)=>i?ctx.lineTo(xS(p.day),yS(p.capital)):ctx.moveTo(xS(p.day),yS(p.capital)));ctx.stroke();ctx.setLineDash([]);
-  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);grad.addColorStop(0,col.c1a);grad.addColorStop(1,col.c1b);
-  ctx.beginPath();ctx.moveTo(xS(opt[0].day),yS(mn));opt.forEach(p=>ctx.lineTo(xS(p.day),yS(p.capital)));ctx.lineTo(xS(opt[opt.length-1].day),yS(mn));ctx.closePath();ctx.fillStyle=grad;ctx.fill();
-  ctx.beginPath();opt.forEach((p,i)=>i?ctx.lineTo(xS(p.day),yS(p.capital)):ctx.moveTo(xS(p.day),yS(p.capital)));
-  const lg=ctx.createLinearGradient(pad.l,0,W-pad.r,0);lg.addColorStop(0,col.c1);lg.addColorStop(1,col.c2);ctx.strokeStyle=lg;ctx.lineWidth=2.5;ctx.stroke();
-  ctx.beginPath();ctx.arc(xS(0),yS(C0),4,0,7);ctx.fillStyle=col.c2;ctx.fill();
-  const last=opt[opt.length-1];ctx.beginPath();ctx.arc(xS(last.day),yS(last.capital),4,0,7);ctx.fillStyle=col.c1;ctx.fill();
-  ctx.textAlign='left';ctx.font='11px IBM Plex Sans Arabic';ctx.fillStyle=col.c1;ctx.fillText('● مع التدوير المثالي',pad.l+6,pad.t+12);ctx.fillStyle='rgba(251,191,36,.9)';ctx.fillText('--- بدون تدوير',pad.l+6,pad.t+28);
+  if(optFinal<=C0*1.001){chartState=null;clearChart('العائد اليومي صغير جداً مقابل الرسوم — لا يوجد نمو كافٍ');return;}
+  
+  chartState = { C0, r, F, days, cv, ctx, W, H, pad, cW, cH, col, opt, nc, mx, mn: C0, rg: (mx-C0)||1 };
+  
+  if(!cv.dataset.inter){
+    cv.dataset.inter='1';
+    const getX = e => (e.touches ? e.touches[0].clientX : e.clientX) - cv.getBoundingClientRect().left;
+    const onMv = e => { if(chartState) drawChartFrame(chartState, getX(e)); };
+    const onLv = () => { if(chartState) drawChartFrame(chartState, null); };
+    cv.addEventListener('mousemove', onMv);
+    cv.addEventListener('touchmove', e => { if(chartState){ drawChartFrame(chartState, getX(e)); } }, {passive:true});
+    cv.addEventListener('mouseleave', onLv);
+    cv.addEventListener('touchend', onLv);
+  }
+  drawChartFrame(chartState, null);
 }
 
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.08});
