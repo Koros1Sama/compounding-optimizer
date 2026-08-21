@@ -642,23 +642,20 @@ canvas{display:block}
 
   <!-- Precision Vector Pointer with Animated Radar Ripple -->
   <div class="tour-pointer-wrap" id="tour-pointer-wrap">
-    <svg class="tour-vector-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="tour-vector-svg" viewBox="0 0 448 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:44px;height:50px;overflow:visible;margin-left:-8px;margin-top:4px">
       <defs>
-        <linearGradient id="tourHandGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <linearGradient id="tourHandGrad" x1="0" y1="0" x2="448" y2="512" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stop-color="var(--c1)"/>
           <stop offset="100%" stop-color="var(--c2)"/>
         </linearGradient>
         <filter id="tourGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="var(--c1)" flood-opacity="0.5"/>
+          <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="var(--c1)" flood-opacity="0.6"/>
         </filter>
       </defs>
-      <!-- Radar Pulse Rings -->
-      <circle class="tour-radar-ring" cx="32" cy="8" r="6" stroke="var(--c1)" stroke-width="2" fill="none"/>
-      <circle class="tour-radar-ring r2" cx="32" cy="8" r="12" stroke="var(--c2)" stroke-width="1.5" fill="none"/>
-      <!-- Futuristic Precision Hand Vector -->
-      <path d="M32 6 L32 36 M32 36 C32 40 28 44 24 44 C20 44 18 41 18 36 L18 24 C18 21.8 16.2 20 14 20 C11.8 20 10 21.8 10 24 L10 40 C10 51 18.9 60 30 60 L34 60 C45.1 60 54 51 54 40 L54 28 C54 25.8 52.2 24 50 24 C47.8 24 46 25.8 46 28 L46 36 M46 36 L46 22 C46 19.8 44.2 18 42 18 C39.8 18 38 19.8 38 22 L38 36 M38 36 L38 16 C38 13.8 36.2 12 34 12 C31.8 12 30 13.8 30 16 L30 36" 
-            stroke="url(#tourHandGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="rgba(15,23,42,0.92)" filter="url(#tourGlow)"/>
-      <circle cx="32" cy="6" r="3.5" fill="var(--c1)"/>
+      <circle class="tour-radar-ring" cx="144" cy="40" r="16" stroke="var(--c1)" stroke-width="12" fill="none"/>
+      <circle class="tour-radar-ring r2" cx="144" cy="40" r="32" stroke="var(--c2)" stroke-width="8" fill="none"/>
+      <path d="M448 240v96c0 3.084-.356 6.159-1.063 9.162l-32 136C410.686 499.23 394.562 512 376 512H168a40.004 40.004 0 0 1-32.35-16.473l-127.997-176c-12.993-17.866-9.043-42.883 8.822-55.876 17.867-12.994 42.884-9.043 55.877 8.823L104 315.992V40c0-22.091 17.908-40 40-40s40 17.909 40 40v200h8v-40c0-22.091 17.908-40 40-40s40 17.909 40 40v40h8v-24c0-22.091 17.908-40 40-40s40 17.909 40 40v24h8c0-22.091 17.908-40 40-40s40 17.909 40 40zm-256 80h-8v96h8v-96zm88 0h-8v96h8v-96zm88 0h-8v96h8v-96z" 
+            fill="rgba(15,23,42,0.95)" stroke="url(#tourHandGrad)" stroke-width="16" stroke-linejoin="round" filter="url(#tourGlow)"/>
     </svg>
   </div>
 
