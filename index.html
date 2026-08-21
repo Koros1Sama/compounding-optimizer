@@ -526,24 +526,37 @@ function calculate(){
   cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td>${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
 
   // chart
-  if(!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365);}else{clearChart();}
+  if(r>0&&!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365);}
+  else if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');}
+  else if(tooSmall){clearChart('العائد اليومي صغير جداً مقابل الرسوم — زِد رأس المال للنمو');}
+  else{clearChart('أدخل رأس المال والعائد لعرض الرسم البياني');}
 }
 
 function chartColors(){const cs=getComputedStyle(document.body);return{c1:(cs.getPropertyValue('--c1')||'#34d399').trim(),c2:(cs.getPropertyValue('--c2')||'#22d3ee').trim(),c1a:(cs.getPropertyValue('--c1a')||'rgba(52,211,153,.22)').trim(),c1b:(cs.getPropertyValue('--c1b')||'rgba(52,211,153,0)').trim()};}
 
-function clearChart(){const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,300);ctx.fillStyle='#565f76';ctx.font='13px IBM Plex Sans Arabic';ctx.textAlign='center';ctx.fillText('رأس المال صغير جداً مقابل الرسوم — زِده ثم أعد المحاولة',rect.width/2,150);}
+function clearChart(msg='أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈'){
+  const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,rect.width,300);
+  ctx.fillStyle='#9aa3b8';
+  ctx.font='13px IBM Plex Sans Arabic';
+  ctx.textAlign='center';
+  ctx.fillText(msg,rect.width/2,150);
+}
 
 function drawChart(C0,r,F,days){
+  if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');return;}
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const col=chartColors();
   ctx.clearRect(0,0,W,H);
-  const opt=r>0?simulate(C0,r,F,days):[{day:0,capital:C0},{day:days,capital:C0}];
+  const opt=simulate(C0,r,F,days);
   const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)}];
   let mx=C0;opt.forEach(d=>{if(d.capital>mx)mx=d.capital;});nc.forEach(d=>{if(d.capital>mx)mx=d.capital;});
   const optFinal=opt[opt.length-1].capital;
-  if(optFinal<=C0*1.001){ctx.fillStyle='#565f76';ctx.font='13px IBM Plex Sans Arabic';ctx.textAlign='center';ctx.fillText('رأس المال صغير جداً — لا نمو قابل للتطوير',W/2,H/2);return;}
+  if(optFinal<=C0*1.001){clearChart('العائد اليومي صغير جداً مقابل الرسوم — لا يوجد نمو كافٍ');return;}
   const mn=C0,rg=(mx-mn)||1;
   const xS=d=>pad.l+(d/days)*cW,yS=v=>pad.t+cH-((v-mn)/rg)*cH;
   ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=.5;ctx.fillStyle='#565f76';ctx.font='10px Space Grotesk';ctx.textAlign='right';
