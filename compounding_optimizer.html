@@ -149,6 +149,9 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 .chip .cl{font-size:.68rem;color:var(--ink-faint);margin-bottom:2px}
 .chip .cv{font-family:var(--font-num);font-size:1.1rem;font-weight:700;direction:ltr;font-variant-numeric:tabular-nums}
 .chip .cv.em{color:var(--c1)}.chip .cv.cy{color:var(--c2)}
+.hero-tip{display:flex;align-items:center;justify-content:center;gap:.45rem;font-size:.74rem;color:var(--ink-dim);margin-top:.9rem;padding-top:.75rem;border-top:1px solid var(--line);line-height:1.55;text-align:center}
+.hero-tip b{color:var(--ink);font-weight:600}
+.hero-tip .ht-icon{font-size:.82rem;opacity:.85;flex-shrink:0}
 
 /* ===== tracker ===== */
 .prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.6rem}
@@ -356,6 +359,10 @@ canvas{display:block}
         <div class="cycle-chips">
           <div class="chip"><div class="cl">يُضاف لرأس المال</div><div class="cv em" id="chip-net">$0</div></div>
           <div class="chip"><div class="cl">الرسوم كنسبة</div><div class="cv cy" id="chip-feeratio">0%</div></div>
+        </div>
+        <div class="hero-tip">
+          <span class="ht-icon">💡</span>
+          <span><b>ملحوظة:</b> اسحب الأرباح فور بلوغ هذا الرقم أو تجاوزه. السحب المبكر قبله يلتهم نسبة أكبر في الرسوم.</span>
         </div>
       </div></div>
     </div>
