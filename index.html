@@ -141,27 +141,27 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 /* ===== hero ===== */
 .threshold-hero{text-align:center;padding:.4rem 0 .2rem}
 .threshold-hero .tlbl{font-size:.82rem;color:var(--ink-dim);margin-bottom:.3rem}
-.threshold-hero .tval{font-family:var(--font-num);font-size:clamp(2.8rem,9vw,4.2rem);font-weight:700;line-height:1;background:var(--gt);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;direction:ltr}
-.threshold-hero .tsub{font-size:.8rem;color:var(--ink-faint);margin-top:.5rem;line-height:1.6}
+.threshold-hero .tval{font-family:var(--font-num);font-size:clamp(2.8rem,9vw,4.2rem);font-weight:700;line-height:1;background:var(--gt);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;direction:ltr;font-variant-numeric:tabular-nums}
+.threshold-hero .tsub{font-size:.8rem;color:var(--ink-faint);margin-top:.5rem;line-height:1.6;transition:opacity .2s ease}
 .threshold-hero .tsub b{color:var(--c2);font-family:var(--font-num)}
 .cycle-chips{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1.1rem}
 .chip{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:var(--r-sm);padding:.7rem .8rem;text-align:center}
 .chip .cl{font-size:.68rem;color:var(--ink-faint);margin-bottom:2px}
-.chip .cv{font-family:var(--font-num);font-size:1.1rem;font-weight:700;direction:ltr}
+.chip .cv{font-family:var(--font-num);font-size:1.1rem;font-weight:700;direction:ltr;font-variant-numeric:tabular-nums}
 .chip .cv.em{color:var(--c1)}.chip .cv.cy{color:var(--c2)}
 
 /* ===== tracker ===== */
 .prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.6rem}
 .prog-head .pl{font-size:.76rem;color:var(--ink-dim)}
-.prog-head .pp{font-family:var(--font-num);font-weight:700;color:var(--c1)}
+.prog-head .pp{font-family:var(--font-num);font-weight:700;color:var(--c1);font-variant-numeric:tabular-nums}
 .bar-bg{height:12px;background:rgba(0,0,0,.4);border-radius:50px;overflow:hidden;border:1px solid var(--line)}
-.bar-fill{height:100%;border-radius:50px;background:var(--gb);box-shadow:0 0 14px color-mix(in srgb,var(--c1) 50%,transparent);transition:width .7s var(--ease),background .5s var(--ease);width:0}
+.bar-fill{height:100%;border-radius:50px;background:var(--gb);box-shadow:0 0 14px color-mix(in srgb,var(--c1) 50%,transparent);transition:width .45s cubic-bezier(0.16,1,0.3,1),background .4s ease;width:0}
 .bar-fill.over{background:linear-gradient(90deg,#f59e0b,#fb7185);box-shadow:0 0 14px rgba(251,113,133,.5)}
 .cstat{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:.85rem}
 .csi{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:var(--r-sm);padding:.65rem;text-align:center}
 .csi.go{background:color-mix(in srgb,var(--c1) 10%,transparent);border-color:color-mix(in srgb,var(--c1) 30%,transparent)}
 .csi .cl{font-size:.68rem;color:var(--ink-faint);margin-bottom:2px}
-.csi .cv{font-family:var(--font-num);font-size:1.15rem;font-weight:700;direction:ltr}
+.csi .cv{font-family:var(--font-num);font-size:1.15rem;font-weight:700;direction:ltr;font-variant-numeric:tabular-nums}
 .csi .cv.em{color:var(--c1)}
 .go-banner{margin-top:.85rem;padding:.7rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--c1) 14%,transparent);border:1px solid color-mix(in srgb,var(--c1) 38%,transparent);text-align:center;font-weight:600;color:var(--c1);font-size:.88rem;animation:beat 1.8s ease-in-out infinite;display:none}
 
@@ -171,10 +171,10 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 .stat-tile+.stat-tile::before{content:'';position:absolute;right:0;top:15%;height:70%;width:1px;background:var(--line)}
 .stat-tile .bl{font-size:.7rem;color:var(--ink-dim);margin-bottom:.3rem;line-height:1.3;display:flex;align-items:center;justify-content:center;gap:.3rem}
 .stat-tile .bl .icn{width:14px;height:14px;color:var(--ink-faint)}
-.stat-tile .bv{font-family:var(--font-num);font-size:clamp(1.25rem,4.5vw,1.9rem);font-weight:700;line-height:1.05;direction:ltr;letter-spacing:-.02em}
+.stat-tile .bv{font-family:var(--font-num);font-size:clamp(1.25rem,4.5vw,1.9rem);font-weight:700;line-height:1.05;direction:ltr;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .stat-tile .bv.em{background:var(--gt);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .stat-tile .bv.go{color:var(--gold)}.stat-tile .bv.cy{color:var(--c2)}
-.stat-tile .bs{font-size:.66rem;color:var(--ink-faint);margin-top:.3rem;line-height:1.45}
+.stat-tile .bs{font-size:.66rem;color:var(--ink-faint);margin-top:.3rem;line-height:1.45;transition:opacity .2s ease}
 
 /* ===== journey ===== */
 .journey{display:flex;gap:.5rem;overflow-x:auto;padding:.3rem 0 .2rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
@@ -182,7 +182,7 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 .jnode{flex:0 0 auto;min-width:116px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:var(--r-md);padding:.85rem .7rem;scroll-snap-align:start;transition:transform .4s var(--ease),border-color .4s var(--ease)}
 .jnode:hover{transform:translateY(-3px);border-color:var(--line-2)}
 .jnode .jm{font-size:.62rem;color:var(--gold);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.3rem}
-.jnode .jv{font-family:var(--font-num);font-size:1.05rem;font-weight:700;color:var(--ink);direction:ltr;margin-bottom:.2rem}
+.jnode .jv{font-family:var(--font-num);font-size:1.05rem;font-weight:700;color:var(--ink);direction:ltr;margin-bottom:.2rem;font-variant-numeric:tabular-nums}
 .jnode .jt{font-size:.7rem;color:var(--ink-faint)}
 
 /* ===== table ===== */
@@ -466,7 +466,59 @@ const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d
 const fmt0=n=>'$'+Math.round(n).toLocaleString('en-US');
 const arDays=d=>{if(d<=0)return'—';const r=Math.round(d);return r===1?'يوم واحد (1)':r===2?'يومين (2)':r<=10?r+' أيام':r+' يوم';};
 
-function countUp(el,target,isMoney=true,dec=0){const start=parseFloat(toEnglishDigits(el.dataset.v||0))||0,dur=800,t0=performance.now();el.dataset.v=target;const tick=t=>{const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,3);const v=start+(target-start)*e;el.textContent=isMoney?(dec?'$'+v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'$'+Math.round(v).toLocaleString('en-US')):Math.round(v).toLocaleString('en-US');if(p<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}
+function animateVal(el, target, { prefix='', suffix='', decimals=0, duration=350, fallback='—' } = {}) {
+  if (!el) return;
+  if (target === null || target === undefined || isNaN(target) || (typeof target === 'number' && !isFinite(target))) {
+    if (el._animId) cancelAnimationFrame(el._animId);
+    el._currentVal = null;
+    el.textContent = fallback;
+    return;
+  }
+
+  const numTarget = Number(target);
+  let startVal = typeof el._currentVal === 'number' ? el._currentVal : parseFloat(toEnglishDigits(el.dataset.v || el.textContent.replace(/[^0-9.-]+/g, '')));
+  if (isNaN(startVal)) startVal = 0;
+  el.dataset.v = numTarget;
+
+  if (Math.abs(startVal - numTarget) < (decimals > 0 ? 0.004 : 0.4) && el.textContent && el.textContent !== fallback) {
+    el._currentVal = numTarget;
+    el.textContent = (decimals > 0 
+      ? prefix + numTarget.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix
+      : prefix + Math.round(numTarget).toLocaleString('en-US') + suffix);
+    return;
+  }
+
+  if (el._animId) cancelAnimationFrame(el._animId);
+
+  const t0 = performance.now();
+  const dur = Math.max(160, Math.min(duration, 380));
+
+  const formatNum = (v) => {
+    const s = decimals > 0 
+      ? v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+      : Math.round(v).toLocaleString('en-US');
+    return prefix + s + suffix;
+  };
+
+  const step = (now) => {
+    const elapsed = now - t0;
+    const p = Math.min(1, elapsed / dur);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const current = startVal + (numTarget - startVal) * ease;
+    el._currentVal = current;
+    el.textContent = formatNum(current);
+
+    if (p < 1) {
+      el._animId = requestAnimationFrame(step);
+    } else {
+      el._currentVal = numTarget;
+      el.textContent = formatNum(numTarget);
+      el._animId = null;
+    }
+  };
+
+  el._animId = requestAnimationFrame(step);
+}
 
 function calculate(){
   const C=Math.max(.01,getNum('principal',0));
@@ -481,49 +533,114 @@ function calculate(){
   else wb.classList.remove('show');
 
   // hero
-  countUp($('hero-threshold'),T,true,2);
+  animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
   $('hero-sub').innerHTML=r>0?`أعد التدوير كل <b>${arDays(days)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام';
-  $('chip-net').textContent=fmt(net);
-  $('chip-feeratio').textContent=feeRatio.toFixed(1)+'%';
+  animateVal($('chip-net'),net,{prefix:'$',decimals:2});
+  animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
 
   // tracker
   const cur=Math.max(0,getNum('current-profit',0));
   const rem=Math.max(0,T-cur),dp=C*r,drem=(r>0&&rem>0)?rem/dp:0;
   const prog=T>0?Math.min(100,cur/T*100):0,reached=cur>=T&&T>0;
-  $('prog-pct').textContent=prog.toFixed(0)+'%';
+  animateVal($('prog-pct'),prog,{suffix:'%',decimals:0});
   const fl=$('prog-fill');fl.style.width=prog+'%';fl.classList.toggle('over',reached);
-  $('ss-remaining').textContent=rem>0?fmt(rem):'$0.00';
+  animateVal($('ss-remaining'),rem>0?rem:0,{prefix:'$',decimals:2});
   const sd=$('ss-days'),sdl=$('ss-days-label');
   if(reached){sd.textContent='0';sdl.textContent='وصلت للحد!';}
-  else if(r>0&&rem>0){sd.textContent=Math.ceil(drem)+' يوم';sdl.textContent='الأيام المتبقية';}
-  else{sd.textContent='—';sdl.textContent='أدخل العائد';}
+  else if(r>0&&rem>0){sdl.textContent='الأيام المتبقية';animateVal(sd,Math.ceil(drem),{suffix:' يوم',decimals:0});}
+  else{sdl.textContent='أدخل العائد';animateVal(sd,null,{fallback:'—'});}
   $('go-banner').style.display=reached?'block':'none';
 
   // annual
-  if(r>0&&!tooSmall){const f365=simulate(C,r,F,365).slice(-1)[0].capital;countUp($('stat-annual'),f365,true,0);$('stat-annual-sub').innerHTML=`×${(f365/C).toFixed(1)} نمو &nbsp;•&nbsp; +${fmt0(f365-C)} ربح`;}
-  else{$('stat-annual').textContent='—';$('stat-annual-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';}
+  if(r>0&&!tooSmall){
+    const f365=simulate(C,r,F,365).slice(-1)[0].capital;
+    animateVal($('stat-annual'),f365,{prefix:'$',decimals:0});
+    $('stat-annual-sub').innerHTML=`×${(f365/C).toFixed(1)} نمو &nbsp;•&nbsp; +${fmt0(f365-C)} ربح`;
+  } else {
+    animateVal($('stat-annual'),null,{fallback:'—'});
+    $('stat-annual-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
+  }
+
   // doubling
   const dt=doublingTime(C,r,F);
-  if(dt>0&&!tooSmall){countUp($('stat-double'),dt,false);$('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; @ ${(r*100).toFixed(2)}%`;}
-  else{$('stat-double').textContent='—';$('stat-double-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';}
-  // monthly growth (clear, honest: how much capital grows each month after fees)
-  if(r>0&&!tooSmall){const oF=simulate(C,r,F,365).slice(-1)[0].capital;const mm=Math.pow(oF/C,30.4/365);const pct=(mm-1)*100;$('stat-edge').textContent='×'+mm.toFixed(2);$('stat-edge-sub').innerHTML=`<b style="color:var(--c2)">+${pct.toFixed(0)}%</b> كل شهر &nbsp;•&nbsp; بعد الرسوم`;}
-  else{$('stat-edge').textContent='—';$('stat-edge-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';}
+  if(dt>0&&!tooSmall){
+    animateVal($('stat-double'),dt,{suffix:' يوم',decimals:0});
+    $('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; @ ${(r*100).toFixed(2)}%`;
+  } else {
+    animateVal($('stat-double'),null,{fallback:'—'});
+    $('stat-double-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
+  }
+
+  // monthly growth
+  if(r>0&&!tooSmall){
+    const oF=simulate(C,r,F,365).slice(-1)[0].capital;
+    const mm=Math.pow(oF/C,30.4/365);
+    const pct=(mm-1)*100;
+    animateVal($('stat-edge'),mm,{prefix:'×',decimals:2});
+    $('stat-edge-sub').innerHTML=`<b style="color:var(--c2)">+${pct.toFixed(0)}%</b> كل شهر &nbsp;•&nbsp; بعد الرسوم`;
+  } else {
+    animateVal($('stat-edge'),null,{fallback:'—'});
+    $('stat-edge-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
+  }
 
   // journey
-  const j=$('journey');j.innerHTML='';
-  if(r>0&&!tooSmall){let cap=C,td=0;const m=[{m:'البداية',v:C,t:'اليوم'},{m:'2×',v:2*C},{m:'4×',v:4*C},{m:'8×',v:8*C},{m:'16×',v:16*C},{m:'32×',v:32*C}];
+  const j=$('journey');
+  if(r>0&&!tooSmall){
+    let cap=C,td=0;
+    const m=[{m:'البداية',v:C,t:'اليوم'},{m:'2×',v:2*C},{m:'4×',v:4*C},{m:'8×',v:8*C},{m:'16×',v:16*C},{m:'32×',v:32*C}];
     for(let k=1;k<m.length;k++){const d=doublingTime(m[k-1].v,r,F);td+=d;m[k].t='~'+Math.round(td)+' يوم ('+(td/30.4).toFixed(1)+'ش)';}
-    m.forEach(mk=>{const el=document.createElement('div');el.className='jnode';el.innerHTML=`<div class="jm">${mk.m}</div><div class="jv">${fmt0(mk.v)}</div><div class="jt">${mk.t||'—'}</div>`;j.appendChild(el);});
-  }else{j.innerHTML='<div style="color:var(--ink-faint);font-size:.8rem;padding:1rem">أدخل العائد لعرض رحلة المضاعفة</div>';}
+    const existingNodes=j.querySelectorAll('.jnode');
+    if(existingNodes.length===m.length){
+      m.forEach((mk,idx)=>{
+        const el=existingNodes[idx];
+        const jm=el.querySelector('.jm');if(jm)jm.textContent=mk.m;
+        const jv=el.querySelector('.jv');if(jv)animateVal(jv,mk.v,{prefix:'$',decimals:0});
+        const jt=el.querySelector('.jt');if(jt)jt.textContent=mk.t||'—';
+      });
+    } else {
+      j.innerHTML='';
+      m.forEach(mk=>{
+        const el=document.createElement('div');el.className='jnode';
+        el.innerHTML=`<div class="jm">${mk.m}</div><div class="jv">${fmt0(mk.v)}</div><div class="jt">${mk.t||'—'}</div>`;
+        j.appendChild(el);
+      });
+    }
+  } else {
+    j.innerHTML='<div style="color:var(--ink-faint);font-size:.8rem;padding:1rem">أدخل العائد لعرض رحلة المضاعفة</div>';
+  }
 
   // safety + income
-  if(r>0&&!tooSmall){let cap=C,day=0,since=0,len=optDays(cap,r,F),cum=0,g=8000;while(cum<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}$('safety-days').textContent=day<g?('≈'+day+' يوم'):'> سنة';$('passive-monthly').textContent=fmt0(C*r*30.4)+'/شهر';}
-  else{$('safety-days').textContent='—';$('passive-monthly').textContent='—';}
+  if(r>0&&!tooSmall){
+    let cap=C,day=0,since=0,len=optDays(cap,r,F),cum=0,g=8000;
+    while(cum<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}
+    if(day<g) animateVal($('safety-days'),day,{prefix:'≈ ',suffix:' يوم',decimals:0});
+    else $('safety-days').textContent='> سنة';
+    animateVal($('passive-monthly'),C*r*30.4,{prefix:'$',suffix:'/شهر',decimals:0});
+  } else {
+    animateVal($('safety-days'),null,{fallback:'—'});
+    animateVal($('passive-monthly'),null,{fallback:'—'});
+  }
 
   // table
-  const cyc=projectCycles(C,r,F,10),tb=$('cycle-body');tb.innerHTML='';
-  cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td>${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
+  const cyc=projectCycles(C,r,F,10),tb=$('cycle-body');
+  const existingRows=tb.querySelectorAll('tr');
+  if(existingRows.length===cyc.length){
+    cyc.forEach((c,idx)=>{
+      const tr=existingRows[idx];const cells=tr.children;
+      if(cells.length>=7){
+        cells[0].textContent=c.i;
+        cells[1].textContent=fmt(c.C);
+        cells[2].innerHTML=`<span class="tc">${fmt(c.T)}</span>`;
+        cells[3].textContent=c.d>0?arDays(c.d):'—';
+        cells[4].innerHTML=`<span class="ac">${fmt(c.net)}</span>`;
+        cells[5].innerHTML=`${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}`;
+        cells[6].textContent=c.tot>0?Math.round(c.tot)+' يوم':'—';
+      }
+    });
+  } else {
+    tb.innerHTML='';
+    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td>${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
+  }
 
   // chart
   if(r>0&&!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365);}
