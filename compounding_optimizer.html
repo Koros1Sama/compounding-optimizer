@@ -218,9 +218,9 @@ canvas{display:block}
 .warn-banner.show{display:block;animation:beat 2s ease-in-out infinite}
 
 /* ===== Guide Modal & Help Trigger ===== */
-.btn-guide-trigger{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.07);border:1px solid var(--line-2);color:var(--ink);padding:.4rem .85rem;border-radius:50px;font-size:.76rem;font-weight:600;font-family:var(--font-ar);cursor:pointer;transition:all .25s var(--ease);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.btn-guide-trigger:hover{background:color-mix(in srgb,var(--c1) 16%,transparent);border-color:color-mix(in srgb,var(--c1) 45%,transparent);color:var(--c1);transform:translateY(-1px)}
-.btn-guide-trigger .icn{width:14px;height:14px;color:var(--c1)}
+.btn-guide-trigger{display:inline-grid;place-items:center;width:34px;height:34px;background:rgba(255,255,255,.07);border:1px solid var(--line-2);color:var(--ink);border-radius:50%;cursor:pointer;transition:all .25s var(--ease);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);flex-shrink:0}
+.btn-guide-trigger:hover{background:color-mix(in srgb,var(--c1) 18%,transparent);border-color:color-mix(in srgb,var(--c1) 50%,transparent);color:var(--c1);transform:scale(1.06)}
+.btn-guide-trigger .icn{width:16px;height:16px;color:var(--c1)}
 
 .guide-modal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(3,7,18,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:clamp(.75rem,3vw,1.5rem);opacity:0;pointer-events:none;transition:opacity .3s cubic-bezier(.16,1,.3,1)}
 .guide-modal.open{opacity:1;pointer-events:auto}
@@ -306,10 +306,9 @@ canvas{display:block}
 <div class="wrap">
   <!-- Top Navigation with Eyebrow, Help button, and Themes -->
   <div class="top-nav reveal">
-    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:.6rem">
       <button type="button" class="btn-guide-trigger" id="btn-guide" aria-label="شرح طريقة الاستخدام" title="شرح طريقة الاستخدام">
         <svg class="icn"><use href="#i-help"/></svg>
-        <span>شرح الاستخدام 💡</span>
       </button>
       <span class="eyebrow"><span class="dot"></span> محرّك الثروة المضاعفة</span>
     </div>
