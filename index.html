@@ -408,7 +408,14 @@ canvas{display:block}
   <footer class="foot reveal">
     <span class="disc">هذه الأرقام تقديرية ومبنية على استمرار النسبة الحالية.</span>
     <small>مبني على معادلة √(2·رأس_المال) + 1 — الحد الأمثل المستقل عن النسبة</small>
-    <small style="margin-top:.4rem;color:var(--ink-dim)">صُمِّم بواسطة <b style="color:var(--c1);font-weight:600">عبدالرحمن إسماعيل المخلافي</b></small>
+    <small style="margin-top:.4rem;color:var(--ink-dim);display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap">
+      <span>صُمِّم بواسطة <b style="color:var(--c1);font-weight:600">عبدالرحمن إسماعيل المخلافي</b></span>
+      <span style="opacity:.4">•</span>
+      <a href="https://t.me/KorosSama" target="_blank" rel="noopener" style="color:var(--c2);text-decoration:none;font-weight:600;font-family:var(--font-num);direction:ltr;display:inline-flex;align-items:center;gap:4px">
+        <svg style="width:13px;height:13px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.05-.49-.83-.27-1.49-.42-1.43-.88.03-.24.38-.49 1.03-.75 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.65-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
+        t.me/KorosSama
+      </a>
+    </small>
   </footer>
 </div>
 
@@ -444,6 +451,31 @@ const onInput=()=>document.querySelectorAll('input').forEach(i=>{
   i.addEventListener('keyup',handler);
   i.addEventListener('change',handler);
   i.addEventListener('paste',()=>setTimeout(handler,10));
+
+  // Smart cursor placement: automatically place cursor at the end on first click/focus
+  let isFirstTap = true;
+  const placeCursorAtEnd = () => {
+    const len = i.value.length;
+    try { i.setSelectionRange(len, len); } catch(e) {}
+  };
+
+  i.addEventListener('focus', () => {
+    setTimeout(placeCursorAtEnd, 15);
+  });
+  i.addEventListener('pointerdown', () => {
+    if (document.activeElement !== i) {
+      isFirstTap = true;
+    }
+  });
+  i.addEventListener('click', () => {
+    if (isFirstTap) {
+      placeCursorAtEnd();
+      isFirstTap = false;
+    }
+  });
+  i.addEventListener('blur', () => {
+    isFirstTap = true;
+  });
 });
 
 function saveData(){const o={};INPUT_KEYS.forEach(k=>{const e=$(k);if(e)o[k]=toEnglishDigits(e.value);});try{localStorage.setItem('co-data',JSON.stringify(o));}catch(e){}}
@@ -466,7 +498,7 @@ const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d
 const fmt0=n=>'$'+Math.round(n).toLocaleString('en-US');
 const arDays=d=>{if(d<=0)return'—';const r=Math.round(d);return r===1?'يوم واحد (1)':r===2?'يومين (2)':r<=10?r+' أيام':r+' يوم';};
 
-function animateVal(el, target, { prefix='', suffix='', decimals=0, duration=350, fallback='—' } = {}) {
+function animateVal(el, target, { prefix='', suffix='', decimals=0, duration=700, fallback='—' } = {}) {
   if (!el) return;
   if (target === null || target === undefined || isNaN(target) || (typeof target === 'number' && !isFinite(target))) {
     if (el._animId) cancelAnimationFrame(el._animId);
@@ -491,7 +523,7 @@ function animateVal(el, target, { prefix='', suffix='', decimals=0, duration=350
   if (el._animId) cancelAnimationFrame(el._animId);
 
   const t0 = performance.now();
-  const dur = Math.max(160, Math.min(duration, 380));
+  const dur = Math.max(450, Math.min(duration, 850));
 
   const formatNum = (v) => {
     const s = decimals > 0 
@@ -503,7 +535,8 @@ function animateVal(el, target, { prefix='', suffix='', decimals=0, duration=350
   const step = (now) => {
     const elapsed = now - t0;
     const p = Math.min(1, elapsed / dur);
-    const ease = 1 - Math.pow(1 - p, 3);
+    // Quartic ease out: starts smoothly, decelerates gracefully
+    const ease = 1 - Math.pow(1 - p, 4);
     const current = startVal + (numTarget - startVal) * ease;
     el._currentVal = current;
     el.textContent = formatNum(current);
@@ -532,13 +565,13 @@ function calculate(){
   else if(tooSmall){wb.textContent='رأس مال صغير جداً مقابل الرسوم — كل دورة تخسر مالاً. زِد رأس المال حتى يصبح ربحك اليومي أكبر من الرسوم';wb.classList.add('show');}
   else wb.classList.remove('show');
 
-  // hero
+  // hero (animated)
   animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
   $('hero-sub').innerHTML=r>0?`أعد التدوير كل <b>${arDays(days)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام';
   animateVal($('chip-net'),net,{prefix:'$',decimals:2});
   animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
 
-  // tracker
+  // tracker (animated)
   const cur=Math.max(0,getNum('current-profit',0));
   const rem=Math.max(0,T-cur),dp=C*r,drem=(r>0&&rem>0)?rem/dp:0;
   const prog=T>0?Math.min(100,cur/T*100):0,reached=cur>=T&&T>0;
@@ -551,7 +584,7 @@ function calculate(){
   else{sdl.textContent='أدخل العائد';animateVal(sd,null,{fallback:'—'});}
   $('go-banner').style.display=reached?'block':'none';
 
-  // annual
+  // annual (animated)
   if(r>0&&!tooSmall){
     const f365=simulate(C,r,F,365).slice(-1)[0].capital;
     animateVal($('stat-annual'),f365,{prefix:'$',decimals:0});
@@ -561,7 +594,7 @@ function calculate(){
     $('stat-annual-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
   }
 
-  // doubling
+  // doubling (animated)
   const dt=doublingTime(C,r,F);
   if(dt>0&&!tooSmall){
     animateVal($('stat-double'),dt,{suffix:' يوم',decimals:0});
@@ -571,7 +604,7 @@ function calculate(){
     $('stat-double-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
   }
 
-  // monthly growth
+  // monthly growth (animated)
   if(r>0&&!tooSmall){
     const oF=simulate(C,r,F,365).slice(-1)[0].capital;
     const mm=Math.pow(oF/C,30.4/365);
@@ -583,7 +616,7 @@ function calculate(){
     $('stat-edge-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
   }
 
-  // journey
+  // journey (static update — no animation loops)
   const j=$('journey');
   if(r>0&&!tooSmall){
     let cap=C,td=0;
@@ -594,7 +627,7 @@ function calculate(){
       m.forEach((mk,idx)=>{
         const el=existingNodes[idx];
         const jm=el.querySelector('.jm');if(jm)jm.textContent=mk.m;
-        const jv=el.querySelector('.jv');if(jv)animateVal(jv,mk.v,{prefix:'$',decimals:0});
+        const jv=el.querySelector('.jv');if(jv)jv.textContent=fmt0(mk.v);
         const jt=el.querySelector('.jt');if(jt)jt.textContent=mk.t||'—';
       });
     } else {
@@ -609,19 +642,18 @@ function calculate(){
     j.innerHTML='<div style="color:var(--ink-faint);font-size:.8rem;padding:1rem">أدخل العائد لعرض رحلة المضاعفة</div>';
   }
 
-  // safety + income
+  // safety + income (static update)
   if(r>0&&!tooSmall){
     let cap=C,day=0,since=0,len=optDays(cap,r,F),cum=0,g=8000;
     while(cum<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}
-    if(day<g) animateVal($('safety-days'),day,{prefix:'≈ ',suffix:' يوم',decimals:0});
-    else $('safety-days').textContent='> سنة';
-    animateVal($('passive-monthly'),C*r*30.4,{prefix:'$',suffix:'/شهر',decimals:0});
+    $('safety-days').textContent=day<g?('≈ '+day+' يوم'):'> سنة';
+    $('passive-monthly').textContent=fmt0(C*r*30.4)+'/شهر';
   } else {
-    animateVal($('safety-days'),null,{fallback:'—'});
-    animateVal($('passive-monthly'),null,{fallback:'—'});
+    $('safety-days').textContent='—';
+    $('passive-monthly').textContent='—';
   }
 
-  // table
+  // table (static update)
   const cyc=projectCycles(C,r,F,10),tb=$('cycle-body');
   const existingRows=tb.querySelectorAll('tr');
   if(existingRows.length===cyc.length){
