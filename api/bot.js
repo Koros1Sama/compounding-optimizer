@@ -1,4 +1,4 @@
-﻿// Vercel Serverless Telegram Bot Handler
+// Vercel Serverless Telegram Bot Handler
 module.exports = async function handler(req, res) {
   // Only process POST requests from Telegram Webhook
   if (req.method !== 'POST') {
@@ -12,8 +12,13 @@ module.exports = async function handler(req, res) {
   }
 
   // Dynamically generate the Web App URL from the request host to avoid hardcoding
-  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'compounding-optimizer.vercel.app';
   const WEB_APP_URL = `https://${host}/`;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 
   try {
     // Vercel automatically parses JSON bodies
@@ -21,12 +26,16 @@ module.exports = async function handler(req, res) {
 
     // Helper: Send Telegram API Request
     async function sendTg(method, data) {
-      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+      const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      return await res.json();
+      const result = await response.json();
+      if (!result.ok) {
+        console.error(`Telegram API error on ${method}:`, result);
+      }
+      return result;
     }
 
     // Helper: Answer Callback Query
@@ -44,18 +53,19 @@ module.exports = async function handler(req, res) {
       await answerCallback(cb.id);
 
       if (data === 'help') {
-        const helpText = `💡 *دليل استخدام حاسبة Alpha Calc:*\n\n` +
-          `💰 *الرقم المستهدف:* هنا تضع الحد المثالي الذي تريد أن تتوقف عنده (سحب الأرباح يفضل أن يكون عند الوصول إليه لتجنب هدر الرسوم).\n\n` +
-          `📈 *العائد اليومي:* اختياري، اكتب نسبة الأرباح اليومية التقريبية.\n` +
-          `💸 *رسوم المعاملة ($):* تكلفة سحب أو إعادة تدوير الأرباح.\n\n` +
-          `⚡ *النتائج الفورية:* يحسب لك النظام بدقة عدد الأيام والساعات المثالية للتدوير، وكم يوماً تحتاج لمضاعفة محفظتك (2X / 4X / 8X).\n\n` +
-          `✍️ *إعداد وشرح الدليل:* حسام الأحمدي (@x_a_l_p_h_a)\n\n` +
+        const helpText = `💡 <b>دليل استخدام حاسبة Alpha Calc:</b>\n\n` +
+          `🎯 <b>الهدف الأساسي:</b> حساب التوقيت الرياضي المثالي لإعادة تدوير الأرباح وتفادي استنزاف الرسوم.\n\n` +
+          `💰 <b>الرقم المستهدف:</b> هنا تضع الحد المثالي الذي تريد أن تتوقف عنده (سحب الأرباح وضمها لرأس المال لتسريع التضاعف وتفادي هدر الرسوم).\n\n` +
+          `📈 <b>العائد اليومي:</b> اختياري، اكتب نسبة الأرباح اليومية التقريبية.\n` +
+          `💸 <b>رسوم المعاملة ($):</b> تكلفة سحب أو إعادة تدوير الأرباح (1$).\n\n` +
+          `⚡ <b>النتائج الفورية:</b> يحسب لك النظام بدقة عدد الأيام والساعات المثالية للتدوير، وكم يوماً تحتاج لمضاعفة محفظتك (2X / 4X / 8X).\n\n` +
+          `✍️ <b>إعداد وشرح الدليل:</b> حسام الأحمدي (@x_a_l_p_h_a)\n\n` +
           `👇 اضغط على الزر أدناه لتجربة الحاسبة الآن:`;
 
         await sendTg('sendMessage', {
           chat_id: chatId,
           text: helpText,
-          parse_mode: 'Markdown',
+          parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
               [{ text: '🚀 فتح حاسبة Alpha Calc', web_app: { url: WEB_APP_URL } }],
@@ -85,8 +95,8 @@ module.exports = async function handler(req, res) {
       } else if (text.startsWith('/app')) {
         await sendTg('sendMessage', {
           chat_id: chatId,
-          text: `⚡ *حاسبة Alpha Calc جاهزة!*\n\nاضغط على الزر أدناه لفتح الحاسبة بكامل مميزاتها:`,
-          parse_mode: 'Markdown',
+          text: `⚡ <b>حاسبة Alpha Calc جاهزة!</b>\n\nاضغط على الزر أدناه لفتح الحاسبة بكامل مميزاتها:`,
+          parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
               [{ text: '🚀 فتح حاسبة Alpha Calc', web_app: { url: WEB_APP_URL } }],
@@ -94,15 +104,15 @@ module.exports = async function handler(req, res) {
           },
         });
       } else if (text.startsWith('/help')) {
-        const helpText = `💡 *دليل استخدام حاسبة Alpha Calc:*\n\n` +
-          `💰 *الرقم المستهدف:* هنا تضع الحد المثالي الذي تريد أن تتوقف عنده (سحب الأرباح يفضل أن يكون عند الوصول إليه لتجنب هدر الرسوم).\n\n` +
-          `📝 *المتغيرات الأخرى:* يرجى الرجوع إلى الدليل التفاعلي داخل الحاسبة لمزيد من الشرح المفصل.\n\n` +
+        const helpText = `💡 <b>دليل استخدام حاسبة Alpha Calc:</b>\n\n` +
+          `💰 <b>الرقم المستهدف:</b> هنا تضع الحد المثالي الذي تريد أن تتوقف عنده (سحب الأرباح يفضل أن يكون عند الوصول إليه لتجنب هدر الرسوم).\n\n` +
+          `📝 <b>المتغيرات الأخرى:</b> يرجى الرجوع إلى الدليل التفاعلي داخل الحاسبة لمزيد من الشرح المفصل.\n\n` +
           `👇 اضغط لفتح الحاسبة مباشرة:`;
 
         await sendTg('sendMessage', {
           chat_id: chatId,
           text: helpText,
-          parse_mode: 'Markdown',
+          parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
               [{ text: '🚀 فتح حاسبة Alpha Calc', web_app: { url: WEB_APP_URL } }],
@@ -113,8 +123,8 @@ module.exports = async function handler(req, res) {
         // Any other text
         await sendTg('sendMessage', {
           chat_id: chatId,
-          text: `مرحباً بك ${name}! 👋\n\nأنا بوت *Alpha Calc* المخصص لحساب التراكم المالي ومضاعفة الأرباح.\n\n👇 يمكنك فتح الحاسبة مباشرة بالضغط على الزر أدناه:`,
-          parse_mode: 'Markdown',
+          text: `مرحباً بك ${escapeHtml(name)}! 👋\n\nأنا بوت <b>Alpha Calc</b> المخصص لحساب التراكم المالي ومضاعفة الأرباح.\n\n👇 يمكنك فتح الحاسبة مباشرة بالضغط على الزر أدناه:`,
+          parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
               [{ text: '🚀 فتح حاسبة Alpha Calc', web_app: { url: WEB_APP_URL } }],
@@ -126,20 +136,21 @@ module.exports = async function handler(req, res) {
     }
 
     async function sendWelcomeMessage(chatId, firstName) {
-      const welcome = `مرحباً بك يا *${firstName}* في *Alpha Calc* 👋✨\n\n` +
+      const safeName = escapeHtml(firstName || 'صديقنا');
+      const welcome = `مرحباً بك يا <b>${safeName}</b> في <b>Alpha Calc</b> 👋✨\n\n` +
         `أداة الذكاء المالي لحساب وتطوير استراتيجيتك الاستثمارية للنمو السريع ومضاعفة رأس المال بأفضل تكلفة ووقت ممكنين.\n\n` +
-        `📌 *المميزات الأساسية:*\n` +
+        `📌 <b>المميزات الأساسية:</b>\n` +
         `• حساب دقيق لأوقات التدوير والسحب المثالية.\n` +
         `• خصم تكلفة الرسوم تلقائياً من العائد.\n` +
         `• جدول تفصيلي لمسار مضاعفة المحفظة (2X, 4X...).\n` +
         `• رسوم بيانية تفاعلية متجاوبة.\n\n` +
-        `✍️ *إعداد وشرح الدليل:* حسام الأحمدي (@x_a_l_p_h_a)\n\n` +
-        `👇 *ابدأ الآن بضغطة واحدة:*`;
+        `✍️ <b>إعداد وشرح الدليل:</b> حسام الأحمدي (@x_a_l_p_h_a)\n\n` +
+        `👇 <b>ابدأ الآن بضغطة واحدة:</b>`;
 
       await sendTg('sendMessage', {
         chat_id: chatId,
         text: welcome,
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
             [{ text: '🚀 فتح حاسبة Alpha Calc', web_app: { url: WEB_APP_URL } }],
@@ -154,4 +165,4 @@ module.exports = async function handler(req, res) {
     console.error('Webhook error:', error);
     return res.status(500).json({ error: error.message });
   }
-}
+};
