@@ -14,7 +14,7 @@ exports.handler = async (event) => {
     return { statusCode: 200, body: JSON.stringify({ error: 'BOT_TOKEN is not set' }) };
   }
 
-  const WEB_APP_URL = 'https://velvety-axolotl-3e7cba.netlify.app/?v=1787318764';
+  const WEB_APP_URL = 'https://velvety-axolotl-3e7cba.netlify.app/?v=1787429242';
 
   try {
     const update = JSON.parse(event.body || '{}');
