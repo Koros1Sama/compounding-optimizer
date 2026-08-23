@@ -275,6 +275,10 @@ canvas{display:block}
 .btn-guide-showme:hover{background:color-mix(in srgb, var(--c1) 24%, transparent);border-color:var(--c1);transform:translateY(-1px);box-shadow:0 2px 8px color-mix(in srgb, var(--c1) 30%, transparent)}
 .btn-guide-showme:active{transform:scale(.96)}
 
+.btn-guide-formula{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 28%, transparent);border-radius:20px;color:var(--c1);font-size:0.73rem;font-weight:700;font-family:var(--font-ar);cursor:pointer;margin-top:5px;transition:all .2s;width:fit-content;user-select:none;-webkit-user-select:none}
+.btn-guide-formula:hover{background:color-mix(in srgb, var(--c1) 20%, transparent);border-color:var(--c1);transform:translateY(-1px);box-shadow:0 2px 8px color-mix(in srgb, var(--c1) 25%, transparent)}
+.btn-guide-formula:active{transform:scale(.96)}
+
 /* Clickable rate-prompt elements when rate is empty without changing appearance */
 body.rate-empty .stat-tile,
 body.rate-empty .csi.go,
@@ -594,26 +598,41 @@ body.rate-empty #hero-sub{
       </div>
 
       <!-- Slide 2 -->
-      <div class="guide-slide" data-slide="2" style="justify-content:center">
-        <div style="text-align:center;margin-bottom:.85rem">
+      <div class="guide-slide" data-slide="2" style="justify-content:flex-start">
+        <div style="text-align:center;margin-bottom:.55rem">
           <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">⚖️ لماذا نحتاج هذه الحاسبة؟ (معضلة الرسوم $1)</div>
-          <div style="font-size:.8rem;color:var(--ink-dim);margin-top:3px">التوقيت الدقيق للسحب هو الفارق بين مضاعفة المال وهدره</div>
+          <div style="font-size:.78rem;color:var(--ink-dim);margin-top:2px">التوقيت الدقيق للسحب هو الفارق بين مضاعفة المال وهدره</div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr;gap:.65rem">
-          <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r-sm);padding:.75rem .85rem">
-            <div style="color:#f87171;font-weight:700;font-size:.84rem;margin-bottom:3px">⚠️ خطر السحب المبكر بمبالغ صغيرة:</div>
-            <div style="font-size:.8rem;color:var(--ink-dim);line-height:1.55">كل سحب يكلف <b>$1 رسوم شبكة ثابتة</b>. لو سحبت مثلاً $3 أرباح ستدفع $1 وتخسر <b>33% من ربحك</b> هباءً في الرسوم!</div>
+        <div style="display:grid;grid-template-columns:1fr;gap:.5rem">
+          <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r-sm);padding:.65rem .8rem">
+            <div style="color:#f87171;font-weight:700;font-size:.82rem;margin-bottom:2px">⚠️ خطر السحب المبكر بمبالغ صغيرة:</div>
+            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.5">كل سحب يكلف <b>$1 رسوم شبكة ثابتة</b>. لو سحبت مثلاً $3 أرباح ستدفع $1 وتخسر <b>33% من ربحك</b> هباءً في الرسوم!</div>
           </div>
 
-          <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r-sm);padding:.75rem .85rem">
-            <div style="color:#fbbf24;font-weight:700;font-size:.84rem;margin-bottom:3px">⏳ خطر التأخر الطويل:</div>
-            <div style="font-size:.8rem;color:var(--ink-dim);line-height:1.55">لو تركت أرباحك تتراكم لفترات طويلة دون تدوير، سيفوتك مفعول الأرباح المركبة ويتأخر نمو رأس مالك.</div>
+          <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r-sm);padding:.65rem .8rem">
+            <div style="color:#fbbf24;font-weight:700;font-size:.82rem;margin-bottom:2px">⏳ خطر التأخر الطويل:</div>
+            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.5">لو تركت أرباحك تتراكم لفترات طويلة دون تدوير، سيفوتك مفعول الأرباح المركبة ويتأخر نمو رأس مالك.</div>
           </div>
 
-          <div style="background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 35%, transparent);border-radius:var(--r-sm);padding:.75rem .85rem">
-            <div style="color:var(--c1);font-weight:700;font-size:.84rem;margin-bottom:3px">🎯 الحل (نقطة التدوير الذهبية):</div>
-            <div style="font-size:.8rem;color:var(--ink);line-height:1.55">الحاسبة تعطيك <b>الرقم المستهدف الدقيق</b> لسحب الأرباح وتدويرها بأعلى كفاءة رياضية وسحق أثر الرسوم تماماً.</div>
+          <div style="background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 35%, transparent);border-radius:var(--r-sm);padding:.65rem .8rem">
+            <div style="color:var(--c1);font-weight:700;font-size:.82rem;margin-bottom:2px">🎯 الحل (نقطة التدوير الذهبية):</div>
+            <div style="font-size:.78rem;color:var(--ink);line-height:1.5">الحاسبة تعطيك <b>الرقم المستهدف الدقيق</b> لسحب الأرباح وتدويرها بأعلى كفاءة رياضية وسحق أثر الرسوم تماماً.</div>
+            <div style="margin-top:5px">
+              <button type="button" class="btn-guide-formula" id="btn-toggle-formula" onclick="toggleFormulaBox()">
+                <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <span>📐 أرني المعادلة الرياضية</span>
+              </button>
+            </div>
+
+            <div id="guide-formula-box" style="display:none;margin-top:7px;padding:7px 9px;background:rgba(0,0,0,.45);border:1px solid color-mix(in srgb, var(--c1) 30%, var(--line));border-radius:var(--r-sm)">
+              <div style="font-family:var(--font-num);font-size:.88rem;font-weight:700;color:var(--c1);direction:ltr;text-align:center;background:rgba(255,255,255,.04);padding:4px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.08);margin-bottom:5px">
+                Target ≈ √( 2 × Capital × Fee )
+              </div>
+              <div style="font-size:.75rem;color:var(--ink-dim);line-height:1.5">
+                <b>معادلة التفاضل لنقطة التوازن المثالية:</b> تشتق الحاسبة دالة معدل النمو التراكمي وتساويها بالصفر لتحدد بالمليمتر النقطة التي تتعادل عندها نسبة نمو رأس المال مع تكلفة دولار الرسوم ($1)، لتحقيق أعلى وتيرة مضاعفة ومنع هدر الرسوم.
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1227,6 +1246,16 @@ function closeGuide() {
     document.body.style.overflow = '';
     try { localStorage.setItem('co_guide_seen_v1', '1'); } catch(e){}
   }
+}
+
+function toggleFormulaBox() {
+  const box = $('guide-formula-box');
+  const btn = $('btn-toggle-formula');
+  if (!box || !btn) return;
+  const isHidden = box.style.display === 'none' || box.style.display === '';
+  box.style.display = isHidden ? 'block' : 'none';
+  const span = btn.querySelector('span');
+  if (span) span.textContent = isHidden ? '▲ إخفاء المعادلة' : '📐 أرني المعادلة الرياضية';
 }
 
 const btnGuide = $('btn-guide');
