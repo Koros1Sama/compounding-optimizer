@@ -511,7 +511,7 @@ body.rate-empty #hero-sub{
     <div class="col-5">
       <div class="shell" style="height:100%"><div class="core" style="height:100%;display:flex;flex-direction:column;justify-content:center">
         <div style="font-size:.7rem;color:var(--c2);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:.7rem">المعادلة المثلى</div>
-        <div class="formula"><span class="v">الحد</span><span class="o">=</span><span class="o">√(</span><span>2</span><span class="o">×</span><span class="v">رأس المال</span><span class="o">) +</span><span>1</span></div>
+        <div class="formula"><span class="v">الحد</span><span class="o">=</span><span class="o">√(</span><span>2</span><span class="o">×</span><span class="v">رأس المال</span><span class="o">+</span><span>1</span><span class="o">)</span></div>
         <div style="font-size:.74rem;color:var(--ink-faint);text-align:center;margin-top:.7rem;line-height:1.6">مستقلة عن نسبة العائد — النسبة تحدد عدد الأيام فقط</div>
       </div></div>
     </div>
@@ -530,7 +530,7 @@ body.rate-empty #hero-sub{
 
   <footer class="foot reveal">
     <span class="disc">هذه الأرقام تقديرية ومبنية على استمرار النسبة الحالية.</span>
-    <small>مبني على معادلة √(2·رأس_المال) + 1 — الحد الأمثل المستقل عن النسبة</small>
+    <small>مبني على معادلة √(2·رأس_المال + 1) — الحد الأمثل المستقل عن النسبة</small>
     <small style="margin-top:.4rem;color:var(--ink-dim);display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:.3rem">
         <span>صُمِّم بواسطة <b style="color:var(--c1);font-weight:600">عبدالرحمن إسماعيل المخلافي</b></span>
@@ -891,10 +891,10 @@ try{const s=localStorage.getItem('co-theme');setTheme(THEMES.includes(s)?s:'emer
 document.querySelectorAll('.th').forEach(b=>b.addEventListener('click',()=>{setTheme(b.dataset.t);calculate();}));
 
 // ===== core math (verified) =====
-const threshold=(C,F)=>Math.sqrt(2*C*F)+F;
+const threshold=(C,F)=>Math.sqrt(F*(2*C+F));
 function optDays(C,r,F){if(r<=0||C<=0)return 0;const a=F/C;let bN=1,bG=1+r-a;for(let n=2;n<=80;n++){const base=1+n*r-a;if(base<=0)break;const g=Math.pow(base,1/n);if(g>bG){bG=g;bN=n;}}return bN;}
-function doublingTime(C0,r,F){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap<2*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
-function simulate(C0,r,F,days){if(r<=0)return[{day:0,capital:C0},{day,capital:C0}];let cap=C0,since=0,len=optDays(cap,r,F),h=[{day:0,capital:C0}],step=Math.max(1,Math.ceil(days/140));for(let d=1;d<=days;d++){since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}if(d%step===0||d===days)h.push({day:d,capital:cap});}return h;}
+function doublingTime(C0,r,F){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<2*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
+function simulate(C0,r,F,days){if(r<=0)return[{day:0,capital:C0},{day:days,capital:C0}];let cap=C0,since=0,len=optDays(cap,r,F),h=[{day:0,capital:C0}],step=Math.max(1,Math.ceil(days/140));for(let d=1;d<=days;d++){since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}if(d%step===0||d===days)h.push({day:d,capital:cap+cap*r*since});}return h;}
 function projectCycles(C0,r,F,max){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F),d=r>0?optDays(C,r,F):0,p=r>0?C*r*d:0,net=r>0?p-F:0,nC=C+net;tot+=d;out.push({i,C,T,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(C>C0*60||nC<=out[out.length-1].C+0.001)break;}return out;}
 const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmt0=n=>'$'+Math.round(n).toLocaleString('en-US');
@@ -1048,7 +1048,7 @@ function calculate(){
   // safety + income (static update)
   if(r>0&&!tooSmall){
     let cap=C,day=0,since=0,len=optDays(cap,r,F),cum=0,g=8000;
-    while(cum<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}
+    while(cum+cap*r*since<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}
     $('safety-days').textContent=day<g?('≈ '+day+' يوم'):'> سنة';
     $('passive-monthly').textContent=fmt0(C*r*30.4)+'/شهر';
   } else {
