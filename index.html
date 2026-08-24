@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>محسّن إعادة التدوير | الثروة المضاعفة</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -90,6 +90,10 @@ input, .bv, .tval, .cv, .jv, td, .formula, .pp, [data-num], .sn, .stat-tile .bv,
   unicode-bidi: isolate;
   direction: ltr !important;
 }
+
+/* Bidi-isolated numeric tokens (fixes × / % jumping to the wrong side in RTL text) */
+.bdi{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.jm{direction:ltr;unicode-bidi:isolate}
 
 
 /* ===== header ===== */
@@ -183,7 +187,7 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 
 /* ===== table ===== */
 .tbl-wrap{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--line);margin-top:.4rem}
-table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:540px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
 thead{background:rgba(255,255,255,.025)}
 th{padding:.7rem .6rem;text-align:center;font-weight:600;color:var(--c2);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:.65rem .6rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--font-num);font-weight:500;white-space:nowrap;transition:background .3s}
@@ -191,6 +195,19 @@ tbody tr:hover td{background:rgba(255,255,255,.03)}
 td .tc{color:var(--c1);font-weight:700}
 td .ac{color:var(--c2);font-weight:600}
 td .mk{color:var(--gold);font-weight:700;font-family:var(--font-ar)}
+@media(max-width:680px){
+  table{font-size:.72rem}
+  th{padding:.5rem .3rem;font-size:.6rem;white-space:normal}
+  td{padding:.5rem .3rem}
+  .col-tot{display:none}
+  .journey{flex-wrap:wrap;overflow-x:visible}
+  .jnode{flex:1 1 28%;min-width:0}
+}
+@media(max-width:400px){
+  table{font-size:.66rem}
+  th{padding:.42rem .2rem}
+  td{padding:.42rem .2rem}
+}
 .chartbox{width:100%;height:300px;margin-top:.3rem}
 canvas{display:block}
 
@@ -278,6 +295,99 @@ canvas{display:block}
 .btn-guide-formula{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 28%, transparent);border-radius:20px;color:var(--c1);font-size:0.73rem;font-weight:700;font-family:var(--font-ar);cursor:pointer;margin-top:5px;transition:all .2s;width:fit-content;user-select:none;-webkit-user-select:none}
 .btn-guide-formula:hover{background:color-mix(in srgb, var(--c1) 20%, transparent);border-color:var(--c1);transform:translateY(-1px);box-shadow:0 2px 8px color-mix(in srgb, var(--c1) 25%, transparent)}
 .btn-guide-formula:active{transform:scale(.96)}
+
+/* ===== exit-strategies secret modal ===== */
+.st-intro{font-size:.72rem;color:var(--ink-dim);line-height:1.6;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:var(--r-sm);padding:.5rem .65rem}
+.st-table{width:100%;border-collapse:collapse;margin-top:.4rem}
+.st-table th{font-size:.58rem;color:var(--ink-faint);font-weight:600;padding:.28rem .12rem;text-align:right;border-bottom:1px solid var(--line-2)}
+.st-table td{font-size:.67rem;color:var(--ink-dim);padding:.38rem .12rem;border-bottom:1px solid var(--line);vertical-align:middle}
+.st-table tr:last-child td{border-bottom:none}
+.st-table tr.rec td{background:color-mix(in srgb,var(--c1) 8%,transparent)}
+.st-table tr.rec td:first-child{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.st-table tr.rec td:last-child{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.st-num{font-family:var(--font-num);direction:ltr;display:inline-block;font-weight:700;color:var(--ink);white-space:nowrap}
+.st-badge{font-size:.58rem;padding:2px 8px;border-radius:50px;font-weight:700;font-family:var(--font-ar);white-space:nowrap}
+.st-list{margin:.35rem 0 0;padding-right:1rem;display:grid;gap:.28rem}
+.st-list li{font-size:.7rem;color:var(--ink-dim);line-height:1.55}
+.st-list b{color:var(--ink)}
+.st-out{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.st-chip{font-size:.57rem;font-weight:700;padding:1px 7px;border-radius:50px;white-space:nowrap;line-height:1.5;font-family:var(--font-ar)}
+.st-chip.cash{background:color-mix(in srgb,var(--c1) 14%,transparent);color:var(--c1)}
+.st-chip.mach{background:color-mix(in srgb,var(--c2) 13%,transparent);color:var(--c2)}
+.st-sum{margin-top:.5rem;display:flex;align-items:flex-start;gap:.45rem;background:color-mix(in srgb,var(--gold) 9%,transparent);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);border-radius:var(--r-sm);padding:.5rem .6rem;font-size:.68rem;line-height:1.6;color:var(--ink-dim)}
+.st-sum b{color:var(--ink)}
+.st-acc{border:1px solid var(--line);border-radius:var(--r-sm);margin-top:.45rem;background:rgba(255,255,255,.03);overflow:hidden}
+.st-acc-head{width:100%;display:flex;align-items:center;gap:.4rem;background:none;border:none;color:var(--ink);font-family:var(--font-ar);font-size:.73rem;font-weight:700;padding:.55rem .7rem;cursor:pointer;text-align:right;transition:background .2s}
+.st-acc-head:hover{background:rgba(255,255,255,.04)}
+.st-acc-side{display:flex;align-items:center;gap:.45rem;margin-inline-start:auto}
+.st-arrow{color:var(--ink-faint);font-size:.62rem;transition:transform .25s}
+.st-acc.open .st-arrow{transform:rotate(180deg)}
+.st-acc-body{display:none;padding:0 .7rem .6rem}
+.st-acc.open .st-acc-body{display:block}
+.st-acc.open{border-color:color-mix(in srgb,var(--c1) 40%,transparent)}
+.st-legend{display:flex;align-items:center;gap:.9rem;font-size:.6rem;color:var(--ink-faint);margin-top:.6rem;flex-wrap:wrap}
+.st-legend .sdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:.3rem;vertical-align:-1px}
+.st-legend .lk{margin-inline-start:auto;display:inline-flex;align-items:center;gap:.3rem}
+.st-bars{--nmw:92px}
+.st-plan{margin-top:.32rem;border-radius:8px}
+.st-bar-row{display:flex;align-items:center;gap:.5rem;padding:.14rem .3rem;border-radius:6px;cursor:pointer;transition:background .25s var(--ease)}
+.st-bar-row:hover{background:rgba(255,255,255,.05)}
+.st-bar-row.rec{background:color-mix(in srgb,var(--c1) 7%,transparent)}
+.st-bar-row.rec:hover{background:color-mix(in srgb,var(--c1) 12%,transparent)}
+.st-plan.open .st-bar-row{background:rgba(255,255,255,.06)}
+.st-plan.open .st-bar-row.rec{background:color-mix(in srgb,var(--c1) 14%,transparent)}
+.st-bar-name{flex:0 0 var(--nmw);font-size:.6rem;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-bar-row.rec .st-bar-name{color:var(--c1);font-weight:700}
+.st-bar-track{flex:1;height:13px;display:flex;border-radius:4px;overflow:hidden;background:rgba(0,0,0,.4);border:1px solid var(--line);position:relative}
+.st-seg-r{background:color-mix(in srgb,var(--c2) 55%,transparent);width:0;transition:width .9s var(--ease-out);position:relative}
+.st-seg-h{background:color-mix(in srgb,var(--gold) 55%,transparent);width:0;transition:width .9s var(--ease-out);position:relative}
+.st-seg-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-num);font-size:.5rem;color:rgba(255,255,255,.85);text-shadow:0 1px 2px rgba(0,0,0,.5);direction:ltr}
+.st-base-tick{position:absolute;top:-3px;bottom:-3px;width:0;border-inline-start:1px dashed rgba(255,255,255,.4);pointer-events:none}
+.st-bar-lock{flex:0 0 auto;font-family:var(--font-num);font-size:.6rem;color:var(--ink);direction:ltr;min-width:36px}
+.st-bar-chev{flex:0 0 auto;color:var(--ink-faint);font-size:.58rem;transition:transform .3s var(--ease)}
+.st-plan.open .st-bar-chev{transform:rotate(180deg)}
+.st-bar-detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease-out)}
+.st-plan.open .st-bar-detail{grid-template-rows:1fr}
+.st-bar-detail>div{overflow:hidden}
+.st-detail-in{margin:.25rem .45rem .35rem;padding:.5rem .55rem;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:var(--r-sm);display:grid;gap:.3rem}
+.st-det-row{display:flex;align-items:baseline;gap:.45rem;font-size:.62rem;color:var(--ink-dim);line-height:1.5}
+.st-det-key{flex:0 0 auto;font-size:.56rem;font-weight:700;padding:1px 7px;border-radius:50px;white-space:nowrap}
+.st-det-key.r{background:color-mix(in srgb,var(--c2) 16%,transparent);color:var(--c2)}
+.st-det-key.h{background:color-mix(in srgb,var(--gold) 16%,transparent);color:var(--gold)}
+.st-det-key.l{background:color-mix(in srgb,var(--c1) 16%,transparent);color:var(--c1)}
+.st-det-row b{color:var(--ink);font-family:var(--font-num);direction:ltr;unicode-bidi:isolate}
+.st-det-row .t{font-family:var(--font-ar)!important;direction:rtl}
+.st-scale{position:relative;height:13px;margin-inline-start:calc(var(--nmw) + .5rem);margin-inline-end:calc(36px + .5rem);font-family:var(--font-num);font-size:.5rem;color:var(--ink-faint);direction:ltr}
+.st-scale i{position:absolute;transform:translateX(50%);white-space:nowrap;font-style:normal}
+.st-scale i::after{content:'';position:absolute;top:-4px;right:50%;width:1px;height:3px;background:var(--line-2)}
+.st-fade{opacity:0;transform:translateY(10px);animation:stFade .55s var(--ease-out) forwards}
+@keyframes stFade{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .st-seg-r,.st-seg-h,.st-bar-detail,.st-bar-chev{transition:none}
+  .st-fade{animation:none;opacity:1;transform:none}
+}
+.st-sub2{display:block;font-size:.54rem;color:var(--ink-faint);font-weight:400}
+#safety-point{cursor:pointer;border-radius:var(--r-sm);padding:.25rem .35rem;margin:-.25rem -.35rem;transition:background .3s var(--ease)}
+#safety-point:hover{background:rgba(255,255,255,.045)}
+#safety-point:active{background:rgba(255,255,255,.08)}
+.st-hint{font-size:.6rem;color:var(--ink-faint);margin-top:.45rem;display:flex;align-items:center;gap:.3rem;opacity:.8}
+@media(max-width:430px){
+  #strat-modal .guide-body{padding:.65rem}
+  #strat-modal .guide-head{padding:.65rem .75rem}
+  .st-intro{font-size:.68rem;padding:.45rem .55rem}
+  .st-table th{font-size:.54rem}
+  .st-table td{font-size:.63rem;padding:.34rem .08rem}
+  .st-sum{font-size:.64rem;padding:.45rem .55rem}
+  .st-acc-head{font-size:.69rem;padding:.5rem .6rem}
+  .st-list li{font-size:.67rem}
+  .st-badge{font-size:.53rem;padding:1px 6px}
+  .st-chip{font-size:.53rem;padding:1px 6px}
+  .st-bar-name{flex-basis:76px;font-size:.56rem}
+  .st-bars{--nmw:76px}
+  .st-scale{font-size:.46rem}
+  .st-legend{font-size:.56rem;gap:.6rem}
+  .st-legend .lk{margin-inline-start:0}
+}
 
 /* Clickable rate-prompt elements when rate is empty without changing appearance */
 body.rate-empty .stat-tile,
@@ -407,7 +517,7 @@ body.rate-empty #hero-sub{
           <div class="chip"><div class="cl">الرسوم كنسبة</div><div class="cv cy" id="chip-feeratio">0%</div></div>
         </div>
         <div class="hero-tip">
-          <span class="ht-icon">💡</span>
+          <span class="ht-icon"><svg class="icn"><use href="#i-sparkles"/></svg></span>
           <span>اسحب الأرباح فور بلوغ هذا الرقم أو تجاوزه. السحب المبكر قبله يلتهم نسبة أكبر في الرسوم.</span>
         </div>
       </div></div>
@@ -436,7 +546,7 @@ body.rate-empty #hero-sub{
                 <div class="csi go"><div class="cl" id="ss-days-label">الأيام المتبقية</div><div class="cv em" id="ss-days">—</div></div>
               </div>
               <div class="go-banner" id="go-banner">
-    <div style="font-size:1.1rem;margin-bottom:6px">🎉 اكتملت الدورة بنجاح!</div>
+    <div style="font-size:1.1rem;margin-bottom:6px">✓ اكتملت الدورة بنجاح!</div>
     <div style="font-weight:400;font-size:0.85rem;color:var(--ink-dim);line-height:1.5;margin-bottom:12px">اسحب الأرباح الآن وأضفها لرأس مالك، ثم ابدأ دورة جديدة بمعطيات محدثة لتحقيق أرباح مضاعفة.</div>
     <button type="button" id="btn-new-cycle" class="tc-btn pri" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:0.6rem;font-size:0.85rem;border-radius:4px;background:var(--c1);color:#04121a;font-weight:700">
       <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.27l5.43 5.43"/></svg>
@@ -470,9 +580,10 @@ body.rate-empty #hero-sub{
           <div class="journey" id="journey"></div>
         </div>
         <div class="col-5" style="display:flex;flex-direction:column;gap:.85rem;justify-content:center">
-          <div>
+          <div id="safety-point">
             <div class="head" style="margin-bottom:.4rem"><div class="ic" style="color:var(--rose)"><svg class="icn"><use href="#i-shield"/></svg></div><div class="section-title">نقطة الأمان</div></div>
             <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">بعد <b style="color:var(--rose);font-family:var(--font-num)" id="safety-days">—</b> يوم تكون قد ربحت <b>قيمة رأس مالك الأصلي</b> — اسحبه والعب بفلوس المنصة.</div>
+            <div class="st-hint"><svg class="icn" style="width:11px;height:11px"><use href="#i-shield"/></svg> اضغط لعرض مخطط الخروج الكامل <span class="st-arrow">▾</span></div>
           </div>
           <div class="divider" style="margin:0"></div>
           <div>
@@ -500,7 +611,7 @@ body.rate-empty #hero-sub{
       <div class="shell"><div class="core">
         <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub">كل صف دورة كاملة. ↑ = نقطة تضاعف. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
         <div class="tbl-wrap">
-          <table><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th>إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
+          <table><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th class="col-tot">إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
         </div>
       </div></div>
     </div>
@@ -556,11 +667,11 @@ body.rate-empty #hero-sub{
   <div class="guide-card">
     <div class="guide-head">
       <div class="gh-title">
-        <span>💡 دليل استخدام الحاسبة</span>
+        <span><svg class="icn" style="width:14px;height:14px;vertical-align:-2px;"><use href="#i-sparkles"/></svg> دليل استخدام الحاسبة</span>
       </div>
       <div style="display:flex;align-items:center;gap:.6rem">
         <span class="gh-step" id="guide-step-tag">الخطوة 1 من 5</span>
-        <button type="button" class="guide-close" id="guide-close-btn" aria-label="إغلاق">✕</button>
+        <button type="button" class="guide-close" id="guide-close-btn" aria-label="إغلاق">×</button>
       </div>
     </div>
 
@@ -568,7 +679,7 @@ body.rate-empty #hero-sub{
       <!-- Slide 1 -->
       <div class="guide-slide active" data-slide="1" style="justify-content:center">
         <div style="text-align:center;margin-bottom:.85rem">
-          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">💡 ما هي "إعادة التدوير" ولماذا نقوم بها؟</div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">${svg("sparkles")}ما هي "إعادة التدوير" ولماذا نقوم بها؟</div>
           <div style="font-size:.8rem;color:var(--ink-dim);margin-top:3px">المفهوم الأساسي لتحقيق أقصى نمو ومضاعفة للمحفظة</div>
         </div>
 
@@ -589,7 +700,7 @@ body.rate-empty #hero-sub{
         </div>
 
         <div class="g-step-item" style="margin-bottom:0">
-          <div class="g-step-num">🚀</div>
+          <div class="g-step-num"><svg class="icn" style="width:20px;height:20px"><use href="#i-rocket"/></svg></div>
           <div class="g-step-text">
             <b>النتيجة (الأرباح المركبة المتضاعفة):</b><br>
             عندما تنضم الأرباح لرأس المال، تصبح أرباحك السابقة نفسها تنتج لك أرباحاً جديدة متزايدة كل يوم فتتضاعف محفظتك بسرعة!
@@ -600,13 +711,13 @@ body.rate-empty #hero-sub{
       <!-- Slide 2 -->
       <div class="guide-slide" data-slide="2" style="justify-content:flex-start">
         <div style="text-align:center;margin-bottom:.55rem">
-          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">⚖️ لماذا نحتاج هذه الحاسبة؟ (معضلة الرسوم $1)</div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">لماذا نحتاج هذه الحاسبة؟ (معضلة الرسوم $1)</div>
           <div style="font-size:.78rem;color:var(--ink-dim);margin-top:2px">التوقيت الدقيق للسحب هو الفارق بين مضاعفة المال وهدره</div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr;gap:.5rem">
           <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r-sm);padding:.65rem .8rem">
-            <div style="color:#f87171;font-weight:700;font-size:.82rem;margin-bottom:2px">⚠️ خطر السحب المبكر بمبالغ صغيرة:</div>
+            <div style="color:#f87171;font-weight:700;font-size:.82rem;margin-bottom:2px">خطر السحب المبكر بمبالغ صغيرة:</div>
             <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.5">كل سحب يكلف <b>$1 رسوم شبكة ثابتة</b>. لو سحبت مثلاً $3 أرباح ستدفع $1 وتخسر <b>33% من ربحك</b> هباءً في الرسوم!</div>
           </div>
 
@@ -616,12 +727,12 @@ body.rate-empty #hero-sub{
           </div>
 
           <div style="background:color-mix(in srgb, var(--c1) 10%, transparent);border:1px solid color-mix(in srgb, var(--c1) 35%, transparent);border-radius:var(--r-sm);padding:.65rem .8rem">
-            <div style="color:var(--c1);font-weight:700;font-size:.82rem;margin-bottom:2px">🎯 الحل (نقطة التدوير الذهبية):</div>
+            <div style="color:var(--c1);font-weight:700;font-size:.82rem;margin-bottom:2px">الحل (نقطة التدوير الذهبية):</div>
             <div style="font-size:.78rem;color:var(--ink);line-height:1.5">الحاسبة تعطيك <b>الرقم المستهدف الدقيق</b> لسحب الأرباح وتدويرها بأعلى كفاءة رياضية وسحق أثر الرسوم تماماً.</div>
             <div style="margin-top:5px">
               <button type="button" class="btn-guide-formula" id="btn-toggle-formula" onclick="toggleFormulaBox()">
                 <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                <span>📐 أرني المعادلة الرياضية</span>
+                <span>أرني المعادلة الرياضية</span>
               </button>
             </div>
 
@@ -636,7 +747,7 @@ body.rate-empty #hero-sub{
       <!-- Slide 3 -->
       <div class="guide-slide" data-slide="3" style="justify-content:center">
         <div style="text-align:center;margin-bottom:.65rem">
-          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">🛠️ خطوات استخدام الحاسبة</div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--c1)">خطوات استخدام الحاسبة</div>
           <div style="font-size:.8rem;color:var(--ink-dim);margin-top:2px">كل ما عليك فعله في 3 خطوات بسيطة</div>
         </div>
 
@@ -650,7 +761,7 @@ body.rate-empty #hero-sub{
             </div>
             <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(0)">
               <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>👁️ أرني مكانه بالحاسبة</span>
+              <span>أرني مكانه بالحاسبة</span>
             </button>
           </div>
         </div>
@@ -663,7 +774,7 @@ body.rate-empty #hero-sub{
             <div style="margin-top:4px">
               <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(1)">
                 <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>👁️ أرني مكانه بالحاسبة</span>
+                <span>أرني مكانه بالحاسبة</span>
               </button>
             </div>
           </div>
@@ -677,7 +788,7 @@ body.rate-empty #hero-sub{
             <div style="margin-top:4px">
               <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(2)">
                 <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>👁️ أرني مكانه بالحاسبة</span>
+                <span>أرني مكانه بالحاسبة</span>
               </button>
             </div>
           </div>
@@ -692,21 +803,21 @@ body.rate-empty #hero-sub{
         </div>
 
         <div class="g-step-item" style="margin-bottom:.65rem">
-          <div class="g-step-num">📊</div>
+          <div class="g-step-num"><svg class="icn" style="width:20px;height:20px"><use href="#i-barchart"/></svg></div>
           <div class="g-step-text" style="width:100%">
             <b>متابعة التقدم (كم باقي؟):</b><br>
             اكتب أرباحك الحالية في خانة <b>"الأرباح المتراكمة الآن"</b> ويظهر لك فوراً كم تبقّى لك من أرباح ووقت للوصول للهدف.
             <div style="margin-top:4px">
               <button type="button" class="btn-guide-showme" onclick="jumpToShowMe(3)">
                 <svg style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>👁️ أرني مكانه بالحاسبة</span>
+                <span>أرني مكانه بالحاسبة</span>
               </button>
             </div>
           </div>
         </div>
 
         <div class="g-step-item" style="margin-bottom:.65rem;background:color-mix(in srgb, var(--c1) 8%, transparent);border-color:color-mix(in srgb, var(--c1) 30%, transparent)">
-          <div class="g-step-num">🔄</div>
+          <div class="g-step-num"><svg class="icn" style="width:20px;height:20px"><use href="#i-repeat"/></svg></div>
           <div class="g-step-text" style="width:100%">
             <b style="color:var(--c1)">ماذا تفعل بعد إعادة الإيداع في البوت؟</b><br>
             بعد سحب الأرباح وإيداعها في البوت ليصبح رأس مالك أكبر: عد للحاسبة وضع رأس مالك الجديد في خانة <b>«رأس المال الحالي»</b> لتبدأ الدورة التالية بالحسابات الدقيقة.
@@ -714,7 +825,7 @@ body.rate-empty #hero-sub{
         </div>
 
         <div class="g-faq-box" style="margin-top:0">
-          <div class="g-faq-q">❓ أيهما أفضل: السحب قبل الهدف أم بعده؟</div>
+          <div class="g-faq-q">أيهما أفضل: السحب قبل الهدف أم بعده؟</div>
           <div class="g-faq-a">التأخر وتجاوز الهدف آمن جداً، لكن الاستعجال والسحب <b>مبكراً قبل الهدف</b> يلتهم نسبة كبيرة من أرباحك في الرسوم الثابتة ($1).</div>
         </div>
       </div>
@@ -722,7 +833,7 @@ body.rate-empty #hero-sub{
       <!-- Slide 5 -->
       <div class="guide-slide" data-slide="5" style="justify-content:center;align-items:center;text-align:center;gap:.65rem;padding:.3rem 0">
         <div style="text-align:center">
-          <div style="font-size:2.2rem;margin-bottom:.2rem">🎯</div>
+          <div style="margin-bottom:.4rem"><svg class="icn" style="width:32px;height:32px;color:var(--c1)"><use href="#i-target"/></svg></div>
           <div style="font-size:1.08rem;font-weight:700;color:var(--c1);margin-bottom:.2rem">أنت الآن جاهز لتعظيم أرباحك!</div>
           <p style="font-size:.82rem;color:var(--ink-dim);line-height:1.6;margin:0 auto;max-width:420px">
             اتبع نقطة التدوير دائماً لتجعل قوة الأرباح المركبة تضاعف رأس مالك بأعلى كفاءة رياضية ممكنة.
@@ -731,17 +842,17 @@ body.rate-empty #hero-sub{
 
         <div class="g-feature-grid" style="width:100%;text-align:right">
           <div class="g-feat-card" style="padding:.55rem .75rem">
-            <div class="fc-title" style="font-size:.8rem">🚀 ١. رحلة المضاعفة</div>
+            <div class="fc-title" style="font-size:.8rem">١. رحلة المضاعفة</div>
             <div class="fc-desc" style="font-size:.74rem">تظهر لك متى ستضاعف مالك (×2 ، ×4 ، ×8) والوقت المقدر بالأيام والشهور.</div>
           </div>
           <div class="g-feat-card" style="padding:.55rem .75rem">
-            <div class="fc-title" style="font-size:.8rem">📈 ٢. رسم بياني تفاعلي</div>
+            <div class="fc-title" style="font-size:.8rem">٢. رسم بياني تفاعلي</div>
             <div class="fc-desc" style="font-size:.74rem">يوضح الفرق الهائل بين نمو رأس المال مع إعادة التدوير وبدونها.</div>
           </div>
         </div>
 
         <div class="g-credits-box" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.7rem 1rem;background:color-mix(in srgb, var(--c1) 6%, rgba(255,255,255,.02));border:1px solid color-mix(in srgb, var(--c1) 25%, var(--line));border-radius:var(--r-md);margin-top:.2rem">
-          <div style="font-size:.75rem;color:var(--ink-dim)">✍️ شرح الدليل</div>
+          <div style="font-size:.75rem;color:var(--ink-dim)">شرح الدليل</div>
           <div style="font-size:1.02rem;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:.5rem;justify-content:center;flex-wrap:wrap">
             <span style="color:var(--c1)">حسام الأحمدي</span>
             <a href="https://t.me/x_a_l_p_h_a" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:color-mix(in srgb, var(--c1) 18%, transparent);border:1px solid color-mix(in srgb, var(--c1) 40%, transparent);color:var(--c1);font-size:0.78rem;font-weight:700;text-decoration:none;font-family:var(--font-num);direction:ltr">
@@ -766,6 +877,27 @@ body.rate-empty #hero-sub{
         <button type="button" class="guide-btn secondary" id="guide-prev-btn" style="display:none">السابق</button>
         <button type="button" class="guide-btn primary" id="guide-next-btn">التالي</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECRET EXIT-STRATEGIES MODAL (click نقطة الأمان) ===== -->
+<div class="guide-modal" id="strat-modal" role="dialog" aria-modal="true" aria-label="خطط الأمان والمضاعفة">
+  <div class="guide-card" style="height:auto;min-height:0;max-height:min(800px,94vh)">
+    <div class="guide-head">
+      <div class="gh-title">
+        <span><svg class="icn" style="width:14px;height:14px;vertical-align:-2px;"><use href="#i-shield"/></svg> خطط الأمان والمضاعفة — مخطط الخروج</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span class="gh-step" id="strat-rate-tag">—</span>
+        <button type="button" class="guide-close" id="strat-close-btn" aria-label="إغلاق">×</button>
+      </div>
+    </div>
+
+    <div class="guide-body" id="strat-body"><!-- filled by JS --></div>
+
+    <div class="guide-foot" style="justify-content:center">
+      <span style="font-size:.66rem;color:var(--ink-faint);text-align:center">تُحسب لحظياً على أرقامك الحالية • قاعدة ذهبية: احسب دائماً بأسوأ نسبة (<span class="bdi">1%</span>)</span>
     </div>
   </div>
 </div>
@@ -799,9 +931,9 @@ body.rate-empty #hero-sub{
     <div class="tour-card-head">
       <div style="display:flex;align-items:center;gap:.4rem">
         <span class="tour-card-step" id="tour-step-badge">الخطوة 1 من 4</span>
-        <button type="button" class="tour-back-guide" id="tour-back-guide-btn" title="الرجوع للدليل">📖 الدليل</button>
+        <button type="button" class="tour-back-guide" id="tour-back-guide-btn" title="الرجوع للدليل">الدليل</button>
       </div>
-      <button type="button" class="tour-card-close" id="tour-close-btn" aria-label="إغلاق الجولة">✕</button>
+      <button type="button" class="tour-card-close" id="tour-close-btn" aria-label="إغلاق الجولة">×</button>
     </div>
     <div class="tour-card-title" id="tour-step-title"></div>
     <div class="tour-card-desc" id="tour-step-desc"></div>
@@ -1000,7 +1132,7 @@ function calculate(){
   const dt=doublingTime(C,r,F);
   if(dt>0&&!tooSmall){
     animateVal($('stat-double'),dt,{suffix:' يوم',decimals:0});
-    $('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; @ ${(r*100).toFixed(2)}%`;
+    $('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; <span class="bdi">@ ${(r*100).toFixed(2)}%</span>`;
   } else {
     animateVal($('stat-double'),null,{fallback:'—'});
     $('stat-double-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
@@ -1069,23 +1201,24 @@ function calculate(){
         cells[4].innerHTML=`<span class="ac">${fmt(c.net)}</span>`;
         cells[5].innerHTML=`${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}`;
         cells[6].textContent=c.tot>0?Math.round(c.tot)+' يوم':'—';
+        cells[6].className='col-tot';
       }
     });
   } else {
     tb.innerHTML='';
-    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td>${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
+    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
   }
 
   // chart
   if(r>0&&!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365);}
-  else if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');}
+  else if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني');}
   else if(tooSmall){clearChart('العائد اليومي صغير جداً مقابل الرسوم — زِد رأس المال للنمو');}
   else{clearChart('أدخل رأس المال والعائد لعرض الرسم البياني');}
 }
 
 function chartColors(){const cs=getComputedStyle(document.body);return{c1:(cs.getPropertyValue('--c1')||'#34d399').trim(),c2:(cs.getPropertyValue('--c2')||'#22d3ee').trim(),c1a:(cs.getPropertyValue('--c1a')||'rgba(52,211,153,.22)').trim(),c1b:(cs.getPropertyValue('--c1b')||'rgba(52,211,153,0)').trim()};}
 
-function clearChart(msg='أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈'){
+function clearChart(msg='أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني'){
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -1157,7 +1290,7 @@ function drawChartFrame(st, hoverX) {
 }
 
 function drawChart(C0,r,F,days){
-  if(r<=0){chartState=null;clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني 📈');return;}
+  if(r<=0){chartState=null;clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني');return;}
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
@@ -1220,7 +1353,7 @@ function showGuideSlide(n) {
   const prevBtn = $('guide-prev-btn');
   const nextBtn = $('guide-next-btn');
   if (prevBtn) prevBtn.style.display = currentGuideSlide === 1 ? 'none' : 'inline-block';
-  if (nextBtn) nextBtn.textContent = currentGuideSlide === totalGuideSlides ? 'بدء الجولة التفاعلية 🚀' : 'التالي ←';
+  if (nextBtn) nextBtn.textContent = currentGuideSlide === totalGuideSlides ? 'بدء الجولة التفاعلية' : 'التالي ←';
 }
 
 function openGuide(slide = 1) {
@@ -1251,7 +1384,7 @@ function toggleFormulaBox() {
   const isHidden = box.style.display === 'none' || box.style.display === '';
   box.style.display = isHidden ? 'block' : 'none';
   const span = btn.querySelector('span');
-  if (span) span.textContent = isHidden ? '▲ إخفاء المعادلة' : '📐 أرني المعادلة الرياضية';
+  if (span) span.textContent = isHidden ? '▲ إخفاء المعادلة' : 'أرني المعادلة الرياضية';
 }
 
 const btnGuide = $('btn-guide');
@@ -1286,6 +1419,186 @@ if (modalEl) {
     if (e.target === modalEl) closeGuide();
   });
 }
+
+// ===== Secret Exit Strategies Modal (نقطة الأمان) =====
+function multDays(C0,r,F,k){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<k*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
+function harvestDays(C,r,F,kBal){const net=kBal*r*C-F;if(net<=0)return null;return Math.ceil(C/net);}
+function planData(C,r,F,k){const t2=harvestDays(C,r,F,k);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;return{t1:t1,t2:t2,lock:t1+t2};}
+
+function buildStratContent(){
+  const C=Math.max(.01,getNum('principal',0)),r=Math.max(0,getNum('rate',0))/100,F=FEE;
+  const bd=function(x){return '<span class="bdi">'+x+'</span>';};
+  const defs=[
+    {k:1,n:'السحب العادي',sub:'بدون تدوير'},
+    {k:1.25,n:'S1 — الموصى بها',sub:'نقطة التوازن',rec:true},
+    {k:1.5,n:'S2 — الوسطية'},
+    {k:2,n:'التضاعف الكامل',sub:'فكرتك الأصلية'},
+    {k:3,n:'أقصى جرأة'}
+  ];
+  const plans=[];defs.forEach(function(p){plans.push({p:p,d:planData(C,r,F,p.k)});});
+  const ok=plans.filter(function(x){return x.d;});
+  if(!ok.length)return '<div style="text-align:center;color:var(--rose);font-size:.85rem;padding:2rem 0">الربح اليومي لا يغطي رسوم السحب — زِد رأس المال أولاً</div>';
+  const maxLock=Math.max.apply(null,ok.map(function(x){return x.d.lock;}));
+  const base=(plans[0].d)?plans[0].d.lock:null;
+  const fmtM=function(k){return fmt0(k*C*r*30.4);};
+  let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. الخطط كلها تصل لنفس النتيجة، والفرق فقط: كم يوم تنتظر، وكم يبقى داخل البوت يدرّ لك شهرياً.</div>';
+  const detRows=function(p,d){
+    const startBal=p.k*C,net=p.k*C*r-F,M=fmtM(p.k);
+    const ph1=(d.t1>0)
+      ?'<div class="st-det-row"><span class="st-det-key r">تدوير</span><span><span class="t">مدة </span><b>'+' '+arDays(d.t1)+'</b><span class="t"> — الرصيد يصبح </span><b>'+fmt0(startBal)+'</b></span></div>'
+      :'<div class="st-det-row"><span class="st-det-key r">تدوير</span><span class="t">لا توجد — تبدأ السحب من اليوم الأول مباشرة</span></div>';
+    const ph2='<div class="st-det-row"><span class="st-det-key h">سحب يومي</span><span><span class="t">صافي </span><b>$'+net.toFixed(2)+'</b><span class="t">/يوم لمدة </span><b>'+' '+arDays(d.t2)+'</b></span></div>';
+    const ph3='<div class="st-det-row"><span class="st-det-key l">القفل — يوم '+d.lock+'</span><span><span class="t">كاش مسترد </span><b>'+fmt0(C)+'</b><span class="t"> • يبقى بالبوت </span><b>'+fmt0(startBal)+'</b><span class="t"> يدر </span><b>'+M+'</b><span class="t">/شهر</span></span></div>';
+    return ph1+ph2+ph3;
+  };
+  const stepD=(maxLock<=60?15:maxLock<=150?30:Math.ceil(maxLock/5/10)*10);
+  let sc='';for(let v=0;v<=maxLock;v+=stepD){sc+='<i style="right:'+(v/maxLock*100)+'%">'+v+'</i>';}
+  h+='<div class="st-bars">';
+  h+='<div class="st-legend"><span><i class="sdot" style="background:color-mix(in srgb,var(--c2) 55%,transparent)"></i>تدوير</span><span><i class="sdot" style="background:color-mix(in srgb,var(--gold) 55%,transparent)"></i>سحب يومي</span><span><i style="border-inline-start:1px dashed rgba(255,255,255,.45);height:10px;display:inline-block;margin-inline-end:.3rem;vertical-align:-1px"></i>القفل العادي</span><span class="lk"><svg class="icn" style="width:11px;height:11px;color:var(--rose)"><use href="#i-shield"/></svg> اضغط أي شريط للتفاصيل</span></div>';
+  ok.forEach(function(x,i){
+    const d=x.d,p=x.p,w1=d.t1/maxLock*100,w2=d.t2/maxLock*100,dl=i*90;
+    h+='<div class="st-plan" data-k="'+p.k+'">'
+     +'<div class="st-bar-row'+(p.rec?' rec':'')+'" role="button" tabindex="0" aria-expanded="false">'
+     +'<span class="st-bar-name">'+p.n+'</span>'
+     +'<span class="st-bar-track">'
+     +'<span class="st-seg-r" data-w="'+w1+'%" style="width:0;transition-delay:'+dl+'ms">'+(w1>=14?'<span class="st-seg-lbl">'+d.t1+'ي</span>':'')+'</span>'
+     +'<span class="st-seg-h" data-w="'+w2+'%" style="width:0;transition-delay:'+(dl+130)+'ms">'+(w2>=14?'<span class="st-seg-lbl">'+d.t2+'ي</span>':'')+'</span>'
+     +(base?'<span class="st-base-tick" style="right:'+(base/maxLock*100)+'%"></span>':'')
+     +'</span>'
+     +'<span class="st-bar-lock"><span class="st-cnt" data-v="'+d.lock+'" data-d="'+(dl+280)+'">0</span>ي</span>'
+     +'<span class="st-bar-chev">▾</span>'
+     +'</div>'
+     +'<div class="st-bar-detail"><div><div class="st-detail-in">'+detRows(p,d)+'</div></div></div>'
+     +'</div>';
+  });
+  h+='<div class="st-scale st-fade" style="animation-delay:.5s">'+sc+'</div>';
+  h+='</div>';
+  let rows='';
+  ok.forEach(function(x){
+    const d=x.d,p=x.p;
+    rows+='<tr'+(p.rec?' class="rec"':'')+' data-k="'+p.k+'"><td>'+p.n+(p.sub?'<span class="st-sub2">'+p.sub+'</span>':'')+'</td><td>'+(d.t1?arDays(d.t1):'—')+'</td><td>'+arDays(d.t2)+'</td><td><b>'+arDays(d.lock)+'</b></td><td><span class="st-num">'+fmt0(p.k*C)+'</span></td><td><span class="st-num">'+fmtM(p.k)+'</span></td></tr>';
+  });
+  h+='<table class="st-table st-fade" style="animation-delay:.55s"><thead><tr><th>الخطة</th><th>تدوير</th><th>سحب</th><th>القفل</th><th>يبقى بالبوت</th><th>دخله الشهري</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  const s1=plans[1].d,s2=plans[2].d,k2=(plans[3].d)?plans[3].d:null;
+  if(s1&&base){
+    const diffTxt=s1.lock<base?('<b style="color:var(--c1)">أسرع من السحب العادي بـ '+(base-s1.lock)+' يوم</b> — الرصيد الأكبر يبتلع رسوم السحب'):(s1.lock===base?'<b>بنفس سرعة السحب العادي تماماً</b>':'بزيادة '+(s1.lock-base)+' يوم فقط عن العادي');
+    h+='<div class="st-sum st-fade" style="animation-delay:.65s"><svg class="icn" style="width:15px;height:15px;color:var(--gold);flex-shrink:0;margin-top:2px"><use href="#i-sparkles"/></svg><div><b>الخلاصة:</b> S1 تقفل رأس مالك خلال <b>'+arDays(s1.lock)+'</b> — '+diffTxt+' — ويبقى بالبوت <b style="color:var(--c2)">رأس مال دائم '+bd('1.25×')+'</b> يدرّ <span class="st-num">'+fmtM(1.25)+'</span>/شهر بدل <span class="st-num">'+fmtM(1)+'</span>.</div></div>';
+    const rw=Math.max(.004,r-.002);
+    const s1w=(r>rw)?planData(C,rw,F,1.25):null;
+    const baseW=(r>rw)?planData(C,rw,F,1):null;
+    const extraWorst=(s1w&&baseW)?Math.max(0,s1w.lock-baseW.lock):null;
+    h+='<div class="st-acc st-fade" style="animation-delay:.72s"><button type="button" class="st-acc-head"><span style="color:var(--c1)">لماذا S1 تحديداً؟</span><span class="st-acc-side"><span class="st-badge" style="background:color-mix(in srgb,var(--c1) 18%,transparent);color:var(--c1)">الأفضل أماناً ومضاعفة معاً</span><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+      '<li>المسار: <b>'+arDays(s1.t1)+'</b> تدوير خفيف ثم <b>'+arDays(s1.t2)+'</b> سحب يومي — إجازة قصيرة عن السحب تكفي لبناء الرصيد.</li>'+
+      '<li>النقطة الرياضية: مضاعف '+bd('1.2×')+' تقريباً هو <b>قاع منحنى زمن القفل</b> — ما دونه تطول نافذة السحب، وما فوقه يطول الانتظار دون فائدة.</li>'+
+      '<li>مقاومة للأسوأ: لو هبطت النسبة إلى '+bd((rw*100).toFixed(2)+'%')+' يومياً، يتأخر القفل عن السحب العادي بنفس الظروف '+(extraWorst===null?'بأيام قليلة فقط':(extraWorst===0?'<b>صفر يوم — لا تأخير إطلاقاً</b>':'<b>'+extraWorst+' يوم فقط</b>'))+'.</li>'+
+      '<li>بعد القفل كل ما داخل البوت <b>فلوس منظمة</b> — مخاطرتك الصافية صفر والأرباح مستمرة.</li>'+
+      '</ul></div></div>';
+  }
+  if(s2&&base){
+    h+='<div class="st-acc st-fade" style="animation-delay:.78s"><button type="button" class="st-acc-head"><span style="color:var(--gold)">S2 — البديل الوسطي '+bd('1.5×')+'</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+      '<li>المسار: <b>'+arDays(s2.t1)+'</b> تدوير ثم <b>'+arDays(s2.t2)+'</b> سحب — القفل بعد <b>'+arDays(s2.lock)+'</b> ('+(s2.lock>base?bd('+'+(s2.lock-base))+' عن العادي':'أسرع من العادي')+')، ويبقى <span class="st-num">'+fmt0(1.5*C)+'</span> يدرّ <span class="st-num">'+fmtM(1.5)+'</span>/شهر.</li>'+
+      '<li>أيام قليلة إضافية مقابل رأس مال '+bd('+50%')+' دائم داخل البوت — مناسبة إذا ثقتك بالمنصة مرتفعة فعلاً.</li>'+
+      '</ul></div></div>';
+  }
+  if(k2&&base){
+    const halfCost=(s2)?bd((k2.lock-s2.lock)+' يوم'):'10 أيام تقريباً';
+    h+='<div class="st-acc st-fade" style="animation-delay:.84s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">متى تختار '+bd('2×')+' أو '+bd('3×')+'؟</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+      '<li>فكرتك الأصلية: <b>'+arDays(k2.t1)+'</b> تدوير حتى التضاعف ثم <b>'+arDays(k2.t2)+'</b> سحب فقط — القفل بعد <b>'+arDays(k2.lock)+'</b> ('+bd('+'+(k2.lock-base))+' عن العادي).</li>'+
+      '<li>القاعدة: كل نصف مضاعف إضافي يكلف ~'+halfCost+' انتظار مقابل رأس مال أكبر يبقى يعمل — قرار ثقة بالمنصة لا حسابات.</li>'+
+      '</ul></div></div>';
+  }
+  const dbl=multDays(C,r,F,2);
+  h+='<div class="st-acc st-fade" style="animation-delay:.9s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">بعد القفل: التدوير الحر</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+    '<li>تنطبق <b>بعد</b> اكتمال أي خطة أعلاه وقفل رأس مالك بالكامل — بديهية لكنها جوهر اللعبة.</li>'+
+    '<li>ارجع للتدوير بفلوس المنصة نفسها: مضاعفة كاملة تستغرق ~<b>'+(dbl?arDays(dbl):'—')+'</b> (من '+bd('1.25×')+' إلى '+bd('2.5×')+' فأكثر) دون أن تكون أموالك الشخصية على المحك.</li>'+
+    '<li>القاعدة الذهبية: الجرأة قبل القفل خطر حقيقي، وبعده مكسب مجاني بمخاطرة صفر.</li>'+
+    '</ul></div></div>';
+  return h;
+}
+
+function stCountUp(el){
+  const v=+el.dataset.v||0,delay=+el.dataset.d||0;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=v;return;}
+  const t0=performance.now()+delay,dur=750;
+  const tick=function(t){
+    if(t<t0){requestAnimationFrame(tick);return;}
+    const p=Math.min(1,(t-t0)/dur);
+    el.textContent=Math.round(v*(1-Math.pow(1-p,3)));
+    if(p<1)requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function wireStratBody(body){
+  const haptic=function(){if(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.HapticFeedback){try{window.Telegram.WebApp.HapticFeedback.selectionChanged();}catch(e){}}};
+  const togglePlan=function(k){
+    const target=body.querySelector('.st-plan[data-k="'+k+'"]');
+    if(!target)return;
+    const was=target.classList.contains('open');
+    body.querySelectorAll('.st-plan.open').forEach(function(p){p.classList.remove('open');var r=p.querySelector('.st-bar-row');if(r)r.setAttribute('aria-expanded','false');});
+    if(!was){target.classList.add('open');var r=target.querySelector('.st-bar-row');if(r)r.setAttribute('aria-expanded','true');}
+    haptic();
+  };
+  body.querySelectorAll('.st-bar-row').forEach(function(row){
+    row.addEventListener('click',function(){togglePlan(row.parentElement.dataset.k);});
+    row.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();togglePlan(row.parentElement.dataset.k);}});
+  });
+  body.querySelectorAll('.st-table tbody tr[data-k]').forEach(function(tr){
+    tr.style.cursor='pointer';
+    tr.addEventListener('click',function(){togglePlan(tr.dataset.k);});
+  });
+  body.querySelectorAll('.st-acc-head').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const item=btn.parentElement;
+      const wasOpen=item.classList.contains('open');
+      body.querySelectorAll('.st-acc.open').forEach(function(a){a.classList.remove('open');});
+      if(!wasOpen)item.classList.add('open');
+      haptic();
+    });
+  });
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    body.querySelectorAll('.st-seg-r,.st-seg-h').forEach(function(s){s.style.width=s.dataset.w;});
+    body.querySelectorAll('.st-cnt').forEach(stCountUp);
+  });});
+}
+
+function openStrategies(){
+  const m=$('strat-modal');if(!m)return;
+  const body=$('strat-body'),tag=$('strat-rate-tag');
+  const rv=Math.max(0,getNum('rate',0));
+  if(tag)tag.innerHTML='<span class="bdi">@ '+rv.toFixed(2)+'%</span>';
+  if(body){
+    if(rv<=0){
+      body.innerHTML='<div style="text-align:center;color:var(--ink-dim);font-size:.85rem;line-height:2;padding-top:3.5rem">أدخل <b style="color:var(--c1)">العائد اليومي التقريبي</b> أولاً<br>لتُحسب لك الخطط على أرقامك الحالية</div>';
+    }else{
+      body.innerHTML=buildStratContent();
+      wireStratBody(body);
+    }
+  }
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  if(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.HapticFeedback){
+    try{window.Telegram.WebApp.HapticFeedback.impactOccurred('light');}catch(e){}
+  }
+}
+
+function closeStrategies(){
+  const m=$('strat-modal');
+  if(m){m.classList.remove('open');document.body.style.overflow='';}
+}
+
+const safetyPoint=$('safety-point');
+if(safetyPoint)safetyPoint.addEventListener('click',openStrategies);
+
+const stratCloseBtn=$('strat-close-btn');
+if(stratCloseBtn)stratCloseBtn.addEventListener('click',closeStrategies);
+
+const stratModalEl=$('strat-modal');
+if(stratModalEl)stratModalEl.addEventListener('click',(e)=>{if(e.target===stratModalEl)closeStrategies();});
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'&&stratModalEl&&stratModalEl.classList.contains('open'))closeStrategies();
+});
 
 // ===== New Cycle Button Logic =====
 const btnNewCycle = document.getElementById('btn-new-cycle');
@@ -1394,19 +1707,19 @@ function exitShowMeAndReturn() {
 const TOUR_STEPS = [
   {
     targetId: 'step-target-principal',
-    title: '💵 ١. رأس المال الأساسي',
-    desc: 'ضع هنا رأس مالك بالدولار (الرقم المنسوخ من تحت كلمة CAPITAL في البوت). <br><b style="color:var(--c1);display:block;margin-top:6px">⚠️ تنبيه:</b> عند حدوث أي تغيير في رأس مالك (إيداع أو سحب أو إعادة تدوير)، حدّث هذا الرقم لتبدأ دورة جديدة صحيحة.',
+    title: '١. رأس المال الأساسي',
+    desc: 'ضع هنا رأس مالك بالدولار (الرقم المنسوخ من تحت كلمة CAPITAL في البوت). <br><b style="color:var(--c1);display:block;margin-top:6px">تنبيه:</b> عند حدوث أي تغيير في رأس مالك (إيداع أو سحب أو إعادة تدوير)، حدّث هذا الرقم لتبدأ دورة جديدة صحيحة.',
     badge: 'الخطوة 1 من 4'
   },
   {
     targetId: 'result-hero-card',
-    title: '🎯 ٢. الرقم المستهدف لإعادة التدوير',
+    title: '٢. الرقم المستهدف لإعادة التدوير',
     desc: 'هذا هو <span class="hl">الرقم الذهبي</span>؛ عندما تصل أرباحك في البوت لهذا الرقم تسحبها فوراً وتعيد إيداعها لتنضم لرأس المال وتسحق أثر الرسوم.',
     badge: 'الخطوة 2 من 4'
   },
   {
     targetId: 'step-target-rate',
-    title: '📈 ٣. العائد اليومي التقريبي (اختياري)',
+    title: '٣. العائد اليومي التقريبي (اختياري)',
     desc: 'خانة اختيارية تفيدك في تقدير الوقت والأيام المتوقعة لإتمام الدورة، ولا تؤثر إطلاقاً على حجم الرقم المستهدف رياضياً.',
     badge: 'الخطوة 3 من 4'
   },
@@ -1465,7 +1778,7 @@ function renderTourStep(idx) {
   const prevBtn = $('tour-prev-btn');
   const nextBtn = $('tour-next-btn');
   
-  if (stepBadge) stepBadge.textContent = isShowMeMode ? 'معاينة الحقل 🎯' : s.badge;
+  if (stepBadge) stepBadge.textContent = isShowMeMode ? 'معاينة الحقل' : s.badge;
   if (stepTitle) stepTitle.innerHTML = s.title;
   if (stepDesc) stepDesc.innerHTML = s.desc;
   
@@ -1475,7 +1788,7 @@ function renderTourStep(idx) {
     if (dotsWrap) dotsWrap.style.display = 'none';
     if (prevBtn) prevBtn.style.display = 'none';
     if (nextBtn) {
-      nextBtn.textContent = 'حسناً، العودة للشرح 📖';
+      nextBtn.textContent = 'حسناً، العودة للشرح';
       nextBtn.style.width = '100%';
     }
   } else {
@@ -1487,7 +1800,7 @@ function renderTourStep(idx) {
     });
     if (prevBtn) prevBtn.style.display = idx === 0 ? 'none' : 'inline-block';
     if (nextBtn) {
-      nextBtn.textContent = idx === TOUR_STEPS.length - 1 ? 'إنهاء وفهمت 🚀' : 'التالي ←';
+      nextBtn.textContent = idx === TOUR_STEPS.length - 1 ? 'إنهاء وفهمت' : 'التالي ←';
       nextBtn.style.width = 'auto';
     }
   }
