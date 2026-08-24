@@ -610,7 +610,7 @@ body.rate-empty #hero-sub{
   <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
-        <div class="head"><div class="ic"><svg class="icn"><use href="#i-activity"/></svg></div><div><div class="section-title">نمو رأس المال</div><div class="section-sub">النمو الأقصى بدون رسوم مقابل ترك الأرباح دون تدوير</div></div></div>
+        <div class="head"><div class="ic"><svg class="icn"><use href="#i-activity"/></svg></div><div><div class="section-title">نمو رأس المال</div><div class="section-sub">التدوير الأمثل (بالرسوم) مقابل ترك الأرباح حتى النهاية وسحبها مرة واحدة</div></div></div>
         <div class="chartbox"><canvas id="chart"></canvas></div>
       </div></div>
     </div>
@@ -1273,12 +1273,13 @@ function drawChartFrame(st, hoverX) {
   ctx.beginPath(); ctx.arc(xS(0),yS(C0),4,0,7); ctx.fillStyle=col.c2; ctx.fill();
   const last=opt[opt.length-1]; ctx.beginPath(); ctx.arc(xS(last.day),yS(last.capital),4,0,7); ctx.fillStyle=col.c1; ctx.fill();
   
-  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● النمو الأقصى (بدون رسوم)',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير',pad.l+6,pad.t+28);
+  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● مع التدوير الأمثل (بالرسوم)',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير — سحب بالأخير',pad.l+6,pad.t+28);
 
   if (hoverX !== null && hoverX >= pad.l && hoverX <= W-pad.r) {
     const ratio = Math.max(0, Math.min(1, (hoverX - pad.l) / cW));
     const hoverDay = Math.round(ratio * days);
     let optCap = C0, ncCap = C0 + (C0 * st.r * hoverDay);
+    if(hoverDay >= st.days) ncCap -= st.F; // الرسم الوحيد: سحبة واحدة في النهاية
     for(let i=0; i<opt.length-1; i++) {
         if(hoverDay >= opt[i].day && hoverDay <= opt[i+1].day) {
             const dr = (hoverDay - opt[i].day) / (opt[i+1].day - opt[i].day || 1);
@@ -1310,13 +1311,14 @@ function drawChartFrame(st, hoverX) {
 }
 
 function drawChart(C0,r,F,days){
+  cancelPulse(); // أي نبضة قديمة تُلغى قبل استبدال الحالة
   if(r<=0){chartState=null;clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني');return;}
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const col=chartColors();
-  const opt=[];const _st=Math.max(1,Math.ceil(days/140));for(let d=0;d<=days;d+=_st)opt.push({day:d,capital:C0*Math.pow(1+r,d)});if(opt[opt.length-1].day<days)opt.push({day:days,capital:C0*Math.pow(1+r,days)});
-  const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)}];
+  const opt=simulate(C0,r,F,days);
+  const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)-F}];
   let mx=C0;opt.forEach(d=>{if(d.capital>mx)mx=d.capital;});nc.forEach(d=>{if(d.capital>mx)mx=d.capital;});
   const optFinal=opt[opt.length-1].capital;
   if(optFinal<=C0*1.001){chartState=null;clearChart('العائد اليومي صغير جداً مقابل الرسوم — لا يوجد نمو كافٍ');return;}
@@ -1339,19 +1341,20 @@ function drawChart(C0,r,F,days){
 
 // ===== Living chart: 5s pulse — rAF runs ONLY during the ~1.5s pulse, zero work between.
 // Pauses when: tab hidden, chart off-screen, user hovering (tooltip), or reduced-motion. =====
-let chartVisible=true,lastHoverT=0,pulseRAF=0;
+let chartVisible=true,lastHoverT=0,pulseRAF=0,pulseWD=0;
 function initChartPulse(cv){
   if(cv.dataset.pulse)return;cv.dataset.pulse='1';
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){es.forEach(function(e){chartVisible=e.isIntersecting;});},{threshold:.15}).observe(cv.parentElement);
   }
-  ['mousemove','touchmove'].forEach(function(ev){cv.addEventListener(ev,function(){lastHoverT=performance.now();},{passive:true});});
+  ['mousemove','touchmove'].forEach(function(ev){cv.addEventListener(ev,function(){lastHoverT=performance.now();cancelPulse();},{passive:true});});
   document.addEventListener('visibilitychange',function(){if(document.hidden)cancelPulse();});
   window.addEventListener('resize',cancelPulse);
   setInterval(maybePulse,5000);
 }
 function cancelPulse(){
   if(pulseRAF){cancelAnimationFrame(pulseRAF);pulseRAF=0;if(chartState)drawChartFrame(chartState,null);}
+  if(pulseWD){clearTimeout(pulseWD);pulseWD=0;}
 }
 function maybePulse(){
   if(!chartState||!chartVisible||document.hidden)return;
@@ -1366,8 +1369,12 @@ function runPulse(st){
   const pts=opt.map(function(p){return {x:xS(p.day),y:yS(p.capital)};});
   const last=pts[pts.length-1];
   const DUR=1500,t0=performance.now();
+  // أمان: لو علقت الحلقة لأي سبب (خطأ/خنق الخلفية) تُلغى تلقائياً بعد مدة النبضة + هامش
+  if(pulseWD)clearTimeout(pulseWD);
+  pulseWD=setTimeout(cancelPulse,DUR+900);
   const ease=function(t){return 1-Math.pow(1-t,3);};
   const frame=function(t){
+   try{
     const q=Math.min(1,(t-t0)/DUR);
     drawChartFrame(st,null);
     const p=ease(Math.min(1,q*1.12));
@@ -1387,6 +1394,7 @@ function runPulse(st){
     ctx.beginPath();ctx.arc(last.x,last.y,4.5,0,7);ctx.fillStyle=col.c1;ctx.fill();
     ctx.restore();
     if(q<1)pulseRAF=requestAnimationFrame(frame);else{pulseRAF=0;drawChartFrame(st,null);}
+   }catch(err){pulseRAF=0;try{drawChartFrame(st,null);}catch(e2){}if(console&&console.warn)console.warn('pulse cancelled:',err&&err.message);}
   };
   pulseRAF=requestAnimationFrame(frame);
 }
