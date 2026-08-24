@@ -316,15 +316,22 @@ canvas{display:block}
 .st-chip.mach{background:color-mix(in srgb,var(--c2) 13%,transparent);color:var(--c2)}
 .st-sum{margin-top:.5rem;display:flex;align-items:flex-start;gap:.45rem;background:color-mix(in srgb,var(--gold) 9%,transparent);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);border-radius:var(--r-sm);padding:.5rem .6rem;font-size:.68rem;line-height:1.6;color:var(--ink-dim)}
 .st-sum b{color:var(--ink)}
-.st-acc{border:1px solid var(--line);border-radius:var(--r-sm);margin-top:.45rem;background:rgba(255,255,255,.03);overflow:hidden}
-.st-acc-head{width:100%;display:flex;align-items:center;gap:.4rem;background:none;border:none;color:var(--ink);font-family:var(--font-ar);font-size:.73rem;font-weight:700;padding:.55rem .7rem;cursor:pointer;text-align:right;transition:background .2s}
+.st-acc{border:1px solid var(--line);border-radius:var(--r-sm);margin-top:.45rem;background:rgba(255,255,255,.03);overflow:hidden;transition:border-color .3s}
+.st-acc-head{width:100%;display:flex;align-items:center;gap:.55rem;background:none;border:none;color:var(--ink);font-family:var(--font-ar);font-size:.74rem;font-weight:700;padding:.7rem .75rem;min-height:46px;cursor:pointer;text-align:right;transition:background .2s;line-height:1.5}
 .st-acc-head:hover{background:rgba(255,255,255,.04)}
-.st-acc-side{display:flex;align-items:center;gap:.45rem;margin-inline-start:auto}
-.st-arrow{color:var(--ink-faint);font-size:.62rem;transition:transform .25s}
-.st-acc.open .st-arrow{transform:rotate(180deg)}
-.st-acc-body{display:none;padding:0 .7rem .6rem}
-.st-acc.open .st-acc-body{display:block}
+.st-acc-side{display:flex;align-items:center;gap:.45rem;margin-inline-start:auto;flex-shrink:0}
+.st-arrow{color:var(--ink-faint);font-size:.58rem;transition:transform .25s,color .25s;display:grid;place-items:center;width:19px;height:19px;border:1px solid var(--line);border-radius:50%;flex-shrink:0}
+.st-acc.open .st-arrow{transform:rotate(180deg);color:var(--c1);border-color:color-mix(in srgb,var(--c1) 40%,transparent)}
+.st-acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease-out)}
+.st-acc.open .st-acc-body{grid-template-rows:1fr}
+.st-acc-body>div{overflow:hidden}
+.st-acc-body .st-list{margin:.1rem .75rem .7rem}
 .st-acc.open{border-color:color-mix(in srgb,var(--c1) 40%,transparent)}
+.st-freq{display:flex;gap:.28rem;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:50px;padding:.22rem;margin-top:.6rem}
+.st-freq button{flex:1;border:none;background:none;color:var(--ink-faint);font-family:var(--font-ar);font-size:.63rem;font-weight:600;padding:.38rem .15rem;border-radius:50px;cursor:pointer;transition:all .25s var(--ease);white-space:nowrap}
+.st-freq button:hover{color:var(--ink-dim)}
+.st-freq button.on{background:var(--gb);color:#04121a;font-weight:700}
+.st-freq-note{font-size:.56rem;color:var(--ink-faint);margin-top:.32rem;line-height:1.55;text-align:center}
 .st-legend{display:flex;align-items:center;gap:.9rem;font-size:.6rem;color:var(--ink-faint);margin-top:.6rem;flex-wrap:wrap}
 .st-legend .sdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:.3rem;vertical-align:-1px}
 .st-legend .lk{margin-inline-start:auto;display:inline-flex;align-items:center;gap:.3rem}
@@ -599,7 +606,7 @@ body.rate-empty #hero-sub{
   <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
-        <div class="head"><div class="ic"><svg class="icn"><use href="#i-activity"/></svg></div><div><div class="section-title">نمو رأس المال</div><div class="section-sub">مع التدوير المثالي مقابل ترك الأرباح دون تدوير</div></div></div>
+        <div class="head"><div class="ic"><svg class="icn"><use href="#i-activity"/></svg></div><div><div class="section-title">نمو رأس المال</div><div class="section-sub">النمو الأقصى بدون رسوم مقابل ترك الأرباح دون تدوير</div></div></div>
         <div class="chartbox"><canvas id="chart"></canvas></div>
       </div></div>
     </div>
@@ -1256,7 +1263,7 @@ function drawChartFrame(st, hoverX) {
   ctx.beginPath(); ctx.arc(xS(0),yS(C0),4,0,7); ctx.fillStyle=col.c2; ctx.fill();
   const last=opt[opt.length-1]; ctx.beginPath(); ctx.arc(xS(last.day),yS(last.capital),4,0,7); ctx.fillStyle=col.c1; ctx.fill();
   
-  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● مع التدوير المثالي',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير',pad.l+6,pad.t+28);
+  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● النمو الأقصى (بدون رسوم)',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير',pad.l+6,pad.t+28);
 
   if (hoverX !== null && hoverX >= pad.l && hoverX <= W-pad.r) {
     const ratio = Math.max(0, Math.min(1, (hoverX - pad.l) / cW));
@@ -1298,7 +1305,7 @@ function drawChart(C0,r,F,days){
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const col=chartColors();
-  const opt=simulate(C0,r,F,days);
+  const opt=[];const _st=Math.max(1,Math.ceil(days/140));for(let d=0;d<=days;d+=_st)opt.push({day:d,capital:C0*Math.pow(1+r,d)});if(opt[opt.length-1].day<days)opt.push({day:days,capital:C0*Math.pow(1+r,days)});
   const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)}];
   let mx=C0;opt.forEach(d=>{if(d.capital>mx)mx=d.capital;});nc.forEach(d=>{if(d.capital>mx)mx=d.capital;});
   const optFinal=opt[opt.length-1].capital;
@@ -1480,10 +1487,14 @@ if (modalEl) {
 
 // ===== Secret Exit Strategies Modal (نقطة الأمان) =====
 function multDays(C0,r,F,k){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<k*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
-function harvestDays(C,r,F,kBal){const net=kBal*r*C-F;if(net<=0)return null;return Math.ceil(C/net);}
-// البديل الموفّر للرسوم: السحب عند بلوغ الحد الأمثل بدل السحب اليومي (مرحلة الحصاد)
-function harvestDaysOpt(C,r,F,k){const B=k*C;if(B*r<=F)return null;let cash=0,acc=0,day=0;const T=threshold(B,F),g=8000;while(cash<C&&day<g){day++;acc+=B*r;if(acc>=T){cash+=acc-F;acc=0;}}return day>=g?null:day;}
-function planData(C,r,F,k){const t2=harvestDays(C,r,F,k);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;const t2o=harvestDaysOpt(C,r,F,k);return{t1:t1,t2:t2,lock:t1+t2,t2o:t2o,lockO:(t2o==null?null:t1+t2o)};}
+function harvestDaysFreq(C,r,F,k,W){const B=k*C;if(B*r<=0)return null;let acc=0,cash=0,day=0;const g=8000;while(day<g){day++;acc+=B*r;if(cash+acc-F>=C)return day;if(W!==Infinity&&day%W===0&&acc>F){cash+=acc-F;acc=0;}}return null;}
+let HARVEST_W=30;
+try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||hw==='once')HARVEST_W=(hw==='once'?Infinity:+hw);}catch(e){}
+const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
+const wVal=function(w){return w==='once'?Infinity:+w;};
+const wKey=function(w){return w===Infinity?'once':String(w);};
+const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
+function planData(C,r,F,k,W){const t2=harvestDaysFreq(C,r,F,k,W==null?HARVEST_W:W);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;return{t1:t1,t2:t2,lock:t1+t2};}
 
 function buildStratContent(){
   const C=Math.max(.01,getNum('principal',0)),r=Math.max(0,getNum('rate',0))/100,F=FEE;
@@ -1501,16 +1512,25 @@ function buildStratContent(){
   const maxLock=Math.max.apply(null,ok.map(function(x){return x.d.lock;}));
   const base=(plans[0].d)?plans[0].d.lock:null;
   const fmtM=function(k){const net=k*C*r-F;return net>0?fmt0(net*30.4):'—';};
-  let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. مرحلة السحب محسوبة بـ<b>سحب يومي</b> (أسرع خروج لفلوسك — وضع الأمان)، والبديل الموفّر للرسوم يظهر داخل تفاصيل كل خطة.</div>';
+  let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. اختر وتيرة السحب في مرحلة الحصاد: كل ما قلّت السحبات قلّت الرسوم وقصُر الانتظار — مقابل بقاء الأرباح أطول داخل البوت.</div>';
+  h+='<div class="st-freq st-fade" role="group" aria-label="وتيرة السحب">';
+  FREQ_DEFS.forEach(function(fd){const w=wVal(fd[0]);h+='<button type="button" data-w="'+fd[0]+'"'+(w===HARVEST_W?' class="on"':'')+'>'+fd[1]+'</button>';});
+  h+='</div>';
+  h+='<div class="st-freq-note">كل الأرقام أدناه محسوبة بهذه الوتيرة — غيّرها وشوفها تتحدّث فوراً • الرسم '+bd('$'+F)+' لكل سحبة</div>';
   const detRows=function(p,d){
     const startBal=p.k*C,net=p.k*C*r-F,M=fmtM(p.k);
     const ph1=(d.t1>0)
       ?'<div class="st-det-row"><span class="st-det-key r">تدوير</span><span><span class="t">مدة </span><b>'+' '+arDays(d.t1)+'</b><span class="t"> — الرصيد يصبح </span><b>'+fmt0(startBal)+'</b></span></div>'
       :'<div class="st-det-row"><span class="st-det-key r">تدوير</span><span class="t">لا توجد — تبدأ السحب من اليوم الأول مباشرة</span></div>';
-    const ph2='<div class="st-det-row"><span class="st-det-key h">سحب يومي</span><span><span class="t">صافي </span><b>$'+net.toFixed(2)+'</b><span class="t">/يوم لمدة </span><b>'+' '+arDays(d.t2)+'</b></span></div>';
+    const wl=wLabel(HARVEST_W);
+    let ph2='';
+    if(HARVEST_W===Infinity){
+      ph2='<div class="st-det-row"><span class="st-det-key h">سحب '+wl+'</span><span class="t">الأرباح تتجمع كاملة وتُسحب مرة واحدة عند القفل — <b>رسم واحد فقط</b></span></div>';
+    }else{
+      ph2='<div class="st-det-row"><span class="st-det-key h">سحب '+wl+'</span><span><span class="t">كل </span><b>'+(HARVEST_W===Infinity?'':HARVEST_W)+'</b><span class="t"> يوم تدفع </span><b>$'+F.toFixed(0)+'</b><span class="t"> لكل سحبة لمدة </span><b>'+' '+arDays(d.t2)+'</b></span></div>';
+    }
     const ph3='<div class="st-det-row"><span class="st-det-key l">القفل — يوم '+d.lock+'</span><span><span class="t">كاش مسترد </span><b>'+fmt0(C)+'</b><span class="t"> • يبقى بالبوت </span><b>'+fmt0(startBal)+'</b><span class="t"> يدر </span><b>'+M+'</b><span class="t">/شهر</span></span></div>';
     let ph4='';
-    if(d.lockO!=null&&d.lockO<d.lock){ph4='<div class="st-det-row"><span class="st-det-key h">بديل موفّر للرسوم</span><span><span class="t">اسحب عند بلوغ </span><b>$'+threshold(startBal).toFixed(0)+'</b><span class="t"> بدل السحب اليومي → القفل يوم </span><b>'+d.lockO+'</b><span class="t"> (أسرع بـ </span><b>'+(d.lock-d.lockO)+'</b><span class="t"> يوم) مقابل بقاء مبالغ أكبر مؤقتاً داخل البوت</span></span></div>';}
     return ph1+ph2+ph3+ph4;
   };
   const stepD=(maxLock<=60?15:maxLock<=150?30:Math.ceil(maxLock/5/10)*10);
@@ -1550,32 +1570,32 @@ function buildStratContent(){
     const s1w=(r>rw)?planData(C,rw,F,1.25):null;
     const baseW=(r>rw)?planData(C,rw,F,1):null;
     const extraWorst=(s1w&&baseW)?Math.max(0,s1w.lock-baseW.lock):null;
-    h+='<div class="st-acc st-fade" style="animation-delay:.72s"><button type="button" class="st-acc-head"><span style="color:var(--c1)">لماذا S1 تحديداً؟</span><span class="st-acc-side"><span class="st-badge" style="background:color-mix(in srgb,var(--c1) 18%,transparent);color:var(--c1)">الأفضل أماناً ومضاعفة معاً</span><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+    h+='<div class="st-acc st-fade" style="animation-delay:.72s"><button type="button" class="st-acc-head"><span style="color:var(--c1)">لماذا S1 تحديداً؟</span><span class="st-acc-side"><span class="st-badge" style="background:color-mix(in srgb,var(--c1) 18%,transparent);color:var(--c1)">الأفضل أماناً ومضاعفة معاً</span><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><div><ul class="st-list">'+
       '<li>المسار: <b>'+arDays(s1.t1)+'</b> تدوير خفيف ثم <b>'+arDays(s1.t2)+'</b> سحب يومي — إجازة قصيرة عن السحب تكفي لبناء الرصيد.</li>'+
       '<li>النقطة الرياضية: مضاعف '+bd('1.2×')+' تقريباً هو <b>قاع منحنى زمن القفل</b> — ما دونه تطول نافذة السحب، وما فوقه يطول الانتظار دون فائدة.</li>'+
       '<li>مقاومة للأسوأ: لو هبطت النسبة إلى '+bd((rw*100).toFixed(2)+'%')+' يومياً، يتأخر القفل عن السحب العادي بنفس الظروف '+(extraWorst===null?'بأيام قليلة فقط':(extraWorst===0?'<b>صفر يوم — لا تأخير إطلاقاً</b>':'<b>'+extraWorst+' يوم فقط</b>'))+'.</li>'+
       '<li>بعد القفل كل ما داخل البوت <b>فلوس منظمة</b> — مخاطرتك الصافية صفر والأرباح مستمرة.</li>'+
-      '</ul></div></div>';
+      '</ul></div></div></div>';
   }
   if(s2&&base){
-    h+='<div class="st-acc st-fade" style="animation-delay:.78s"><button type="button" class="st-acc-head"><span style="color:var(--gold)">S2 — البديل الوسطي '+bd('1.5×')+'</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+    h+='<div class="st-acc st-fade" style="animation-delay:.78s"><button type="button" class="st-acc-head"><span style="color:var(--gold)">S2 — البديل الوسطي '+bd('1.5×')+'</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><div><ul class="st-list">'+
       '<li>المسار: <b>'+arDays(s2.t1)+'</b> تدوير ثم <b>'+arDays(s2.t2)+'</b> سحب — القفل بعد <b>'+arDays(s2.lock)+'</b> ('+(s2.lock>base?bd('+'+(s2.lock-base))+' عن العادي':'أسرع من العادي')+')، ويبقى <span class="st-num">'+fmt0(1.5*C)+'</span> يدرّ <span class="st-num">'+fmtM(1.5)+'</span>/شهر.</li>'+
       '<li>أيام قليلة إضافية مقابل رأس مال '+bd('+50%')+' دائم داخل البوت — مناسبة إذا ثقتك بالمنصة مرتفعة فعلاً.</li>'+
-      '</ul></div></div>';
+      '</ul></div></div></div>';
   }
   if(k2&&base){
     const halfCost=(s2)?bd((k2.lock-s2.lock)+' يوم'):'10 أيام تقريباً';
-    h+='<div class="st-acc st-fade" style="animation-delay:.84s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">متى تختار '+bd('2×')+' أو '+bd('3×')+'؟</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+    h+='<div class="st-acc st-fade" style="animation-delay:.84s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">متى تختار '+bd('2×')+' أو '+bd('3×')+'؟</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><div><ul class="st-list">'+
       '<li>فكرتك الأصلية: <b>'+arDays(k2.t1)+'</b> تدوير حتى التضاعف ثم <b>'+arDays(k2.t2)+'</b> سحب فقط — القفل بعد <b>'+arDays(k2.lock)+'</b> ('+bd('+'+(k2.lock-base))+' عن العادي).</li>'+
       '<li>القاعدة: كل نصف مضاعف إضافي يكلف ~'+halfCost+' انتظار مقابل رأس مال أكبر يبقى يعمل — قرار ثقة بالمنصة لا حسابات.</li>'+
-      '</ul></div></div>';
+      '</ul></div></div></div>';
   }
   const dbl=multDays(C,r,F,2);
-  h+='<div class="st-acc st-fade" style="animation-delay:.9s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">بعد القفل: التدوير الحر</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><ul class="st-list">'+
+  h+='<div class="st-acc st-fade" style="animation-delay:.9s"><button type="button" class="st-acc-head"><span style="color:var(--c2)">بعد القفل: التدوير الحر</span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><div><ul class="st-list">'+
     '<li>تنطبق <b>بعد</b> اكتمال أي خطة أعلاه وقفل رأس مالك بالكامل — بديهية لكنها جوهر اللعبة.</li>'+
     '<li>ارجع للتدوير بفلوس المنصة نفسها: مضاعفة كاملة تستغرق ~<b>'+(dbl?arDays(dbl):'—')+'</b> (من '+bd('1.25×')+' إلى '+bd('2.5×')+' فأكثر) دون أن تكون أموالك الشخصية على المحك.</li>'+
     '<li>القاعدة الذهبية: الجرأة قبل القفل خطر حقيقي، وبعده مكسب مجاني بمخاطرة صفر.</li>'+
-    '</ul></div></div>';
+    '</ul></div></div></div>';
   return h;
 }
 
@@ -1610,12 +1630,19 @@ function wireStratBody(body){
     tr.style.cursor='pointer';
     tr.addEventListener('click',function(){togglePlan(tr.dataset.k);});
   });
+  body.querySelectorAll('.st-freq button').forEach(function(b){
+    b.addEventListener('click',function(){
+      HARVEST_W=wVal(b.dataset.w);
+      try{localStorage.setItem('co-hfreq',b.dataset.w);}catch(e){}
+      body.innerHTML=buildStratContent();
+      wireStratBody(body);
+      calculate();
+      haptic();
+    });
+  });
   body.querySelectorAll('.st-acc-head').forEach(function(btn){
     btn.addEventListener('click',function(){
-      const item=btn.parentElement;
-      const wasOpen=item.classList.contains('open');
-      body.querySelectorAll('.st-acc.open').forEach(function(a){a.classList.remove('open');});
-      if(!wasOpen)item.classList.add('open');
+      btn.parentElement.classList.toggle('open');
       haptic();
     });
   });
