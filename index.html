@@ -73,7 +73,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 @keyframes d3{0%,100%{transform:translate(0,0)}50%{transform:translate(3vw,2vh)}}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:max(calc(env(safe-area-inset-top, 0px) + 4.5rem), 4.8rem) clamp(1rem,4vw,2rem) 4rem}
+.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:2.5rem clamp(1rem,4vw,2rem) 4rem}
+@media(max-width:768px){.wrap{padding-top:max(calc(env(safe-area-inset-top, 0px) + 4.5rem), 4.8rem)}}
 
 /* ===== top nav & theme switcher ===== */
 .top-nav{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:clamp(1.4rem,3.5vw,2rem);flex-wrap:wrap}
@@ -378,7 +379,7 @@ canvas{display:block}
   .st-fade{animation:none;opacity:1;transform:none}
 }
 .st-sub2{display:block;font-size:.54rem;color:var(--ink-faint);font-weight:400}
-#safety-point{cursor:pointer;border-radius:var(--r-sm);padding:.25rem .35rem;margin:-.25rem -.35rem;transition:background .3s var(--ease)}
+#safety-point{cursor:pointer;border-radius:var(--r-sm);padding:.25rem .35rem;margin:-.25rem -.35rem;transition:background .3s var(--ease);scroll-margin-top:5.4rem}
 #safety-point:hover{background:rgba(255,255,255,.045)}
 #safety-point:active{background:rgba(255,255,255,.08)}
 .st-hint{font-size:.6rem;color:var(--ink-faint);margin-top:.45rem;display:flex;align-items:center;gap:.3rem;opacity:.8}
@@ -1341,13 +1342,20 @@ function drawChart(C0,r,F,days){
 
 // ===== Living chart: 5s pulse — rAF runs ONLY during the ~1.5s pulse, zero work between.
 // Pauses when: tab hidden, chart off-screen, user hovering (tooltip), or reduced-motion. =====
-let chartVisible=true,lastHoverT=0,pulseRAF=0,pulseWD=0;
+let chartVisible=true,lastHoverT=0,pulseRAF=0,pulseWD=0,pointerOn=false;
 function initChartPulse(cv){
   if(cv.dataset.pulse)return;cv.dataset.pulse='1';
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){es.forEach(function(e){chartVisible=e.isIntersecting;});},{threshold:.15}).observe(cv.parentElement);
   }
   ['mousemove','touchmove'].forEach(function(ev){cv.addEventListener(ev,function(){lastHoverT=performance.now();cancelPulse();},{passive:true});});
+  // حضور المؤشر الفعلي (وليس زمنياً): إصبع/فأرة ثابتة فوق الرسم تقرأ التلميح
+  // دون أي أحداث حركة — فلا يجوز أن تنطلق نبضة تمسحه
+  cv.addEventListener('mouseenter',function(){pointerOn=true;cancelPulse();});
+  cv.addEventListener('mouseleave',function(){pointerOn=false;});
+  cv.addEventListener('touchstart',function(){pointerOn=true;lastHoverT=performance.now();cancelPulse();},{passive:true});
+  cv.addEventListener('touchend',function(){pointerOn=false;lastHoverT=performance.now();});
+  cv.addEventListener('pointercancel',function(){pointerOn=false;});
   document.addEventListener('visibilitychange',function(){if(document.hidden)cancelPulse();});
   window.addEventListener('resize',cancelPulse);
   setInterval(maybePulse,5000);
@@ -1358,6 +1366,7 @@ function cancelPulse(){
 }
 function maybePulse(){
   if(!chartState||!chartVisible||document.hidden)return;
+  if(pointerOn)return; // المؤشر على الرسم الآن — التلميح أولى من النبضة
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   if(performance.now()-lastHoverT<1600)return;
   runPulse(chartState);
