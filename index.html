@@ -961,7 +961,13 @@ body.rate-empty #hero-sub{
 
 <script>
 const $=id=>document.getElementById(id);
-const FEE=1; // رسوم ثابتة $1 — عدّلها من هنا فقط
+const FEE=1; // رسوم ثابتة $1 لكل سحبة — عدّلها من هنا فقط
+// وتيرة السحب في مرحلة الحصاد (تُقرأ من هنا + تُحفظ باختيار المستخدم)
+let HARVEST_W=30;
+try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||hw==='once')HARVEST_W=(hw==='once'?Infinity:+hw);}catch(e){}
+const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
+const wVal=function(w){return w==='once'?Infinity:+w;};
+const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
 const INPUT_KEYS=['principal','rate','current-profit'];
 
 function toEnglishDigits(str){
@@ -1488,12 +1494,6 @@ if (modalEl) {
 // ===== Secret Exit Strategies Modal (نقطة الأمان) =====
 function multDays(C0,r,F,k){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<k*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
 function harvestDaysFreq(C,r,F,k,W){const B=k*C;if(B*r<=0)return null;let acc=0,cash=0,day=0;const g=8000;while(day<g){day++;acc+=B*r;if(cash+acc-F>=C)return day;if(W!==Infinity&&day%W===0&&acc>F){cash+=acc-F;acc=0;}}return null;}
-let HARVEST_W=30;
-try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||hw==='once')HARVEST_W=(hw==='once'?Infinity:+hw);}catch(e){}
-const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
-const wVal=function(w){return w==='once'?Infinity:+w;};
-const wKey=function(w){return w===Infinity?'once':String(w);};
-const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
 function planData(C,r,F,k,W){const t2=harvestDaysFreq(C,r,F,k,W==null?HARVEST_W:W);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;return{t1:t1,t2:t2,lock:t1+t2};}
 
 function buildStratContent(){
