@@ -316,7 +316,7 @@ canvas{display:block}
 .st-chip.mach{background:color-mix(in srgb,var(--c2) 13%,transparent);color:var(--c2)}
 .st-sum{margin-top:.5rem;display:flex;align-items:flex-start;gap:.45rem;background:color-mix(in srgb,var(--gold) 9%,transparent);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);border-radius:var(--r-sm);padding:.5rem .6rem;font-size:.68rem;line-height:1.6;color:var(--ink-dim)}
 .st-sum b{color:var(--ink)}
-.st-acc{border:1px solid var(--line);border-radius:var(--r-sm);margin-top:.45rem;background:rgba(255,255,255,.03);overflow:hidden;transition:border-color .3s}
+.st-acc{border:1px solid var(--line);border-radius:var(--r-sm);margin-top:.45rem;background:rgba(255,255,255,.03);overflow:hidden;transition:border-color .3s;flex-shrink:0}
 .st-acc-head{width:100%;display:flex;align-items:center;gap:.6rem;background:none;border:none;color:var(--ink);font-family:var(--font-ar);font-size:.74rem;font-weight:700;padding:.68rem .75rem;min-height:48px;cursor:pointer;text-align:right;transition:background .2s;line-height:1.5;flex-wrap:nowrap}
 .st-acc-head:active{background:rgba(255,255,255,.07)}
 .st-acc-txt{display:flex;flex-direction:column;align-items:flex-start;gap:.24rem;flex:1;min-width:0}
@@ -324,9 +324,9 @@ canvas{display:block}
 .st-acc-side{display:flex;align-items:center;gap:.45rem;flex-shrink:0}
 .st-arrow{color:var(--ink-faint);font-size:.58rem;transition:transform .25s,color .25s;display:grid;place-items:center;width:19px;height:19px;border:1px solid var(--line);border-radius:50%;flex-shrink:0}
 .st-acc.open .st-arrow{transform:rotate(180deg);color:var(--c1);border-color:color-mix(in srgb,var(--c1) 40%,transparent)}
-.st-acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease-out)}
-.st-acc.open .st-acc-body{grid-template-rows:1fr}
-.st-acc-body>div{overflow:hidden}
+.st-acc-body{max-height:0;overflow:hidden;transition:max-height .45s var(--ease-out)}
+.st-acc.open .st-acc-body{max-height:26rem}
+.st-acc-body>div{overflow:visible}
 .st-acc-body .st-list{margin:.1rem .75rem .7rem}
 .st-acc.open{border-color:color-mix(in srgb,var(--c1) 40%,transparent)}
 .st-freq-title{font-size:.65rem;font-weight:700;color:var(--ink);margin-top:.65rem;display:flex;align-items:baseline;gap:.35rem;flex-wrap:wrap}
@@ -340,7 +340,7 @@ canvas{display:block}
 .st-legend .sdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:.3rem;vertical-align:-1px}
 .st-legend .lk{margin-inline-start:auto;display:inline-flex;align-items:center;gap:.3rem}
 .st-bars{--nmw:92px}
-.st-plan{margin-top:.32rem;border-radius:8px}
+.st-plan{margin-top:.32rem;border-radius:8px;flex-shrink:0}
 .st-bar-row{display:flex;align-items:center;gap:.5rem;padding:.14rem .3rem;border-radius:6px;cursor:pointer;transition:background .25s var(--ease)}
 .st-bar-row:hover{background:rgba(255,255,255,.05)}
 .st-bar-row.rec{background:color-mix(in srgb,var(--c1) 7%,transparent)}
@@ -357,8 +357,8 @@ canvas{display:block}
 .st-bar-lock{flex:0 0 auto;font-family:var(--font-num);font-size:.6rem;color:var(--ink);direction:ltr;min-width:36px}
 .st-bar-chev{flex:0 0 auto;color:var(--ink-faint);font-size:.58rem;transition:transform .3s var(--ease)}
 .st-plan.open .st-bar-chev{transform:rotate(180deg)}
-.st-bar-detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease-out)}
-.st-plan.open .st-bar-detail{grid-template-rows:1fr}
+.st-bar-detail{max-height:0;overflow:hidden;transition:max-height .45s var(--ease-out)}
+.st-plan.open .st-bar-detail{max-height:22rem}
 .st-bar-detail>div{overflow:hidden}
 .st-detail-in{margin:.25rem .45rem .35rem;padding:.5rem .55rem;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:var(--r-sm);display:grid;gap:.3rem}
 .st-det-row{display:flex;align-items:baseline;gap:.45rem;font-size:.62rem;color:var(--ink-dim);line-height:1.5}
@@ -1645,12 +1645,18 @@ function wireStratBody(body){
       haptic();
     });
   });
-  body.querySelectorAll('.st-acc-head').forEach(function(btn){
-    btn.addEventListener('click',function(){
+  // تفويض أحداث وحيد للكورديونات: نبعة واحدة على الحاوية الأم، تصمد مهما
+  // أُعيد بناء innerHTML ولا تعتمد على ربط كل زر على حدة
+  if(!body.dataset.accWired){
+    body.dataset.accWired='1';
+    body.addEventListener('click',function(e){
+      const t=e.target;
+      const btn=(t.closest&&t.closest('.st-acc-head'))||null;
+      if(!btn||!body.contains(btn))return;
       btn.parentElement.classList.toggle('open');
-      haptic();
+      if(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.HapticFeedback){try{window.Telegram.WebApp.HapticFeedback.selectionChanged();}catch(err){}}
     });
-  });
+  }
   requestAnimationFrame(function(){requestAnimationFrame(function(){
     body.querySelectorAll('.st-seg-r,.st-seg-h').forEach(function(s){s.style.width=s.dataset.w;});
     body.querySelectorAll('.st-cnt').forEach(stCountUp);
