@@ -1481,7 +1481,9 @@ if (modalEl) {
 // ===== Secret Exit Strategies Modal (نقطة الأمان) =====
 function multDays(C0,r,F,k){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<k*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
 function harvestDays(C,r,F,kBal){const net=kBal*r*C-F;if(net<=0)return null;return Math.ceil(C/net);}
-function planData(C,r,F,k){const t2=harvestDays(C,r,F,k);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;return{t1:t1,t2:t2,lock:t1+t2};}
+// البديل الموفّر للرسوم: السحب عند بلوغ الحد الأمثل بدل السحب اليومي (مرحلة الحصاد)
+function harvestDaysOpt(C,r,F,k){const B=k*C;if(B*r<=F)return null;let cash=0,acc=0,day=0;const T=threshold(B,F),g=8000;while(cash<C&&day<g){day++;acc+=B*r;if(acc>=T){cash+=acc-F;acc=0;}}return day>=g?null:day;}
+function planData(C,r,F,k){const t2=harvestDays(C,r,F,k);if(t2==null)return null;const t1=k>1?multDays(C,r,F,k):0;const t2o=harvestDaysOpt(C,r,F,k);return{t1:t1,t2:t2,lock:t1+t2,t2o:t2o,lockO:(t2o==null?null:t1+t2o)};}
 
 function buildStratContent(){
   const C=Math.max(.01,getNum('principal',0)),r=Math.max(0,getNum('rate',0))/100,F=FEE;
@@ -1499,7 +1501,7 @@ function buildStratContent(){
   const maxLock=Math.max.apply(null,ok.map(function(x){return x.d.lock;}));
   const base=(plans[0].d)?plans[0].d.lock:null;
   const fmtM=function(k){const net=k*C*r-F;return net>0?fmt0(net*30.4):'—';};
-  let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. الخطط كلها تصل لنفس النتيجة، والفرق فقط: كم يوم تنتظر، وكم يبقى داخل البوت يدرّ لك شهرياً.</div>';
+  let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. مرحلة السحب محسوبة بـ<b>سحب يومي</b> (أسرع خروج لفلوسك — وضع الأمان)، والبديل الموفّر للرسوم يظهر داخل تفاصيل كل خطة.</div>';
   const detRows=function(p,d){
     const startBal=p.k*C,net=p.k*C*r-F,M=fmtM(p.k);
     const ph1=(d.t1>0)
@@ -1507,7 +1509,9 @@ function buildStratContent(){
       :'<div class="st-det-row"><span class="st-det-key r">تدوير</span><span class="t">لا توجد — تبدأ السحب من اليوم الأول مباشرة</span></div>';
     const ph2='<div class="st-det-row"><span class="st-det-key h">سحب يومي</span><span><span class="t">صافي </span><b>$'+net.toFixed(2)+'</b><span class="t">/يوم لمدة </span><b>'+' '+arDays(d.t2)+'</b></span></div>';
     const ph3='<div class="st-det-row"><span class="st-det-key l">القفل — يوم '+d.lock+'</span><span><span class="t">كاش مسترد </span><b>'+fmt0(C)+'</b><span class="t"> • يبقى بالبوت </span><b>'+fmt0(startBal)+'</b><span class="t"> يدر </span><b>'+M+'</b><span class="t">/شهر</span></span></div>';
-    return ph1+ph2+ph3;
+    let ph4='';
+    if(d.lockO!=null&&d.lockO<d.lock){ph4='<div class="st-det-row"><span class="st-det-key h">بديل موفّر للرسوم</span><span><span class="t">اسحب عند بلوغ </span><b>$'+threshold(startBal).toFixed(0)+'</b><span class="t"> بدل السحب اليومي → القفل يوم </span><b>'+d.lockO+'</b><span class="t"> (أسرع بـ </span><b>'+(d.lock-d.lockO)+'</b><span class="t"> يوم) مقابل بقاء مبالغ أكبر مؤقتاً داخل البوت</span></span></div>';}
+    return ph1+ph2+ph3+ph4;
   };
   const stepD=(maxLock<=60?15:maxLock<=150?30:Math.ceil(maxLock/5/10)*10);
   let sc='';for(let v=0;v<=maxLock;v+=stepD){sc+='<i style="right:'+(v/maxLock*100)+'%">'+v+'</i>';}
@@ -1539,7 +1543,8 @@ function buildStratContent(){
   h+='<table class="st-table st-fade" style="animation-delay:.55s"><thead><tr><th>الخطة</th><th>تدوير</th><th>سحب</th><th>القفل</th><th>يبقى بالبوت</th><th>دخله الشهري الصافي</th></tr></thead><tbody>'+rows+'</tbody></table>';
   const s1=plans[1].d,s2=plans[2].d,k2=(plans[3].d)?plans[3].d:null;
   if(s1&&base){
-    const diffTxt=s1.lock<base?('<b style="color:var(--c1)">أسرع من السحب العادي بـ '+(base-s1.lock)+' يوم</b> — الرصيد الأكبر يبتلع رسوم السحب'):(s1.lock===base?'<b>بنفس سرعة السحب العادي تماماً</b>':'بزيادة '+(s1.lock-base)+' يوم فقط عن العادي');
+    const dd=s1.lock-base,absd=Math.abs(dd);
+    const diffTxt=absd<=2?('بنفس وقت السحب العادي تقريباً ('+(dd===0?'صفر فرق':(dd>0?'+':'−')+absd+' يوم فقط')+')'):(dd<0?('<b style="color:var(--c1)">أسرع من السحب العادي بـ '+absd+' يوم</b>'):'بزيادة '+dd+' يوم فقط عن العادي');
     h+='<div class="st-sum st-fade" style="animation-delay:.65s"><svg class="icn" style="width:15px;height:15px;color:var(--gold);flex-shrink:0;margin-top:2px"><use href="#i-sparkles"/></svg><div><b>الخلاصة:</b> S1 تقفل رأس مالك خلال <b>'+arDays(s1.lock)+'</b> — '+diffTxt+' — ويبقى بالبوت <b style="color:var(--c2)">رأس مال دائم '+bd('1.25×')+'</b> يدرّ <span class="st-num">'+fmtM(1.25)+'</span>/شهر بدل <span class="st-num">'+fmtM(1)+'</span>.</div></div>';
     const rw=Math.max(.004,r-.002);
     const s1w=(r>rw)?planData(C,rw,F,1.25):null;
