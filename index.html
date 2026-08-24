@@ -582,13 +582,13 @@ body.rate-empty #hero-sub{
         <div class="col-5" style="display:flex;flex-direction:column;gap:.85rem;justify-content:center">
           <div id="safety-point">
             <div class="head" style="margin-bottom:.4rem"><div class="ic" style="color:var(--rose)"><svg class="icn"><use href="#i-shield"/></svg></div><div class="section-title">نقطة الأمان</div></div>
-            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">بعد <b style="color:var(--rose);font-family:var(--font-num)" id="safety-days">—</b> يوم تكون قد ربحت <b>قيمة رأس مالك الأصلي</b> — اسحبه والعب بفلوس المنصة.</div>
+            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">بعد <b style="color:var(--rose);font-family:var(--font-num)" id="safety-days">—</b> يعود <b>رأس مالك الأصلي كاملاً نقداً لجيبك</b> (أسرع نقطة قفل) — وما بعدها تلعب بفلوس المنصة.</div>
             <div class="st-hint"><svg class="icn" style="width:11px;height:11px"><use href="#i-shield"/></svg> اضغط لعرض مخطط الخروج الكامل <span class="st-arrow">▾</span></div>
           </div>
           <div class="divider" style="margin:0"></div>
           <div>
             <div class="head" style="margin-bottom:.4rem"><div class="ic" style="color:var(--gold)"><svg class="icn"><use href="#i-coins"/></svg></div><div class="section-title">وضع الدخل</div></div>
-            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">لو توقفت عن التدوير وسحبت: <b style="color:var(--gold);font-family:var(--font-num)" id="passive-monthly">—</b>/شهر.</div>
+            <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">لو توقفت عن التدوير وسحبت يومياً (صافي بعد الرسوم): <b style="color:var(--gold);font-family:var(--font-num)" id="passive-monthly">—</b>/شهر.</div>
           </div>
         </div>
       </div>
@@ -1176,12 +1176,15 @@ function calculate(){
     j.innerHTML='<div style="color:var(--ink-faint);font-size:.8rem;padding:1rem">أدخل العائد لعرض رحلة المضاعفة</div>';
   }
 
-  // safety + income (static update)
+  // safety + income (static update) — consistent with exit-strategy plans:
+  // outside card shows the FASTEST LOCK DAY (min over k=1, 1.25, 1.5), i.e. the day
+  // your original capital is actually back in your pocket (profits-only withdrawals!)
   if(r>0&&!tooSmall){
-    let cap=C,day=0,since=0,len=optDays(cap,r,F),cum=0,g=8000;
-    while(cum+cap*r*since<C&&day<g){day++;since++;if(since>=len){cum+=cap*r*len-F;cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}
-    $('safety-days').textContent=day<g?('≈ '+day+' يوم'):'> سنة';
-    $('passive-monthly').textContent=fmt0(C*r*30.4)+'/شهر';
+    const locks=[1,1.25,1.5].map(function(k){const d=planData(C,r,F,k);return d?d.lock:Infinity;});
+    const fastest=Math.min.apply(null,locks);
+    $('safety-days').textContent=(isFinite(fastest)&&fastest>0&&fastest<8000)?('≈ '+fastest+' يوم'):'—';
+    const netDaily=C*r-F;
+    $('passive-monthly').textContent=(netDaily>0?fmt0(netDaily*30.4):'—')+'/شهر';
   } else {
     $('safety-days').textContent='—';
     $('passive-monthly').textContent='—';
@@ -1495,7 +1498,7 @@ function buildStratContent(){
   if(!ok.length)return '<div style="text-align:center;color:var(--rose);font-size:.85rem;padding:2rem 0">الربح اليومي لا يغطي رسوم السحب — زِد رأس المال أولاً</div>';
   const maxLock=Math.max.apply(null,ok.map(function(x){return x.d.lock;}));
   const base=(plans[0].d)?plans[0].d.lock:null;
-  const fmtM=function(k){return fmt0(k*C*r*30.4);};
+  const fmtM=function(k){const net=k*C*r-F;return net>0?fmt0(net*30.4):'—';};
   let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. الخطط كلها تصل لنفس النتيجة، والفرق فقط: كم يوم تنتظر، وكم يبقى داخل البوت يدرّ لك شهرياً.</div>';
   const detRows=function(p,d){
     const startBal=p.k*C,net=p.k*C*r-F,M=fmtM(p.k);
@@ -1533,7 +1536,7 @@ function buildStratContent(){
     const d=x.d,p=x.p;
     rows+='<tr'+(p.rec?' class="rec"':'')+' data-k="'+p.k+'"><td>'+p.n+(p.sub?'<span class="st-sub2">'+p.sub+'</span>':'')+'</td><td>'+(d.t1?arDays(d.t1):'—')+'</td><td>'+arDays(d.t2)+'</td><td><b>'+arDays(d.lock)+'</b></td><td><span class="st-num">'+fmt0(p.k*C)+'</span></td><td><span class="st-num">'+fmtM(p.k)+'</span></td></tr>';
   });
-  h+='<table class="st-table st-fade" style="animation-delay:.55s"><thead><tr><th>الخطة</th><th>تدوير</th><th>سحب</th><th>القفل</th><th>يبقى بالبوت</th><th>دخله الشهري</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  h+='<table class="st-table st-fade" style="animation-delay:.55s"><thead><tr><th>الخطة</th><th>تدوير</th><th>سحب</th><th>القفل</th><th>يبقى بالبوت</th><th>دخله الشهري الصافي</th></tr></thead><tbody>'+rows+'</tbody></table>';
   const s1=plans[1].d,s2=plans[2].d,k2=(plans[3].d)?plans[3].d:null;
   if(s1&&base){
     const diffTxt=s1.lock<base?('<b style="color:var(--c1)">أسرع من السحب العادي بـ '+(base-s1.lock)+' يوم</b> — الرصيد الأكبر يبتلع رسوم السحب'):(s1.lock===base?'<b>بنفس سرعة السحب العادي تماماً</b>':'بزيادة '+(s1.lock-base)+' يوم فقط عن العادي');
