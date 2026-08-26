@@ -636,7 +636,7 @@ body.rate-empty #hero-sub{
   <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
-        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub">كل صف دورة كاملة. ↑ = نقطة تضاعف. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
+        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub">كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
         <div class="tbl-wrap">
           <table><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th class="col-tot">إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
         </div>
@@ -1218,8 +1218,8 @@ function calculate(){
     const locks=[1,1.25,1.5].map(function(k){const d=planData(C,r,F,k);return d?d.lock:Infinity;});
     const fastest=Math.min.apply(null,locks);
     $('safety-days').textContent=(isFinite(fastest)&&fastest>0&&fastest<8000)?('≈ '+fastest+' يوم'):'—';
-    const netDaily=C*r-F;
-    $('passive-monthly').textContent=netDaily>0?fmt0(netDaily*30.4):'—';
+    const netDaily=C*r-F,mInc=netDaily*30.4;
+    $('passive-monthly').textContent=netDaily>0?(mInc<0.5?fmt(mInc):fmt0(mInc)):'—';
   } else {
     $('safety-days').textContent='—';
     $('passive-monthly').textContent='—';
@@ -1559,7 +1559,7 @@ function buildStratContent(){
   if(!ok.length)return '<div style="text-align:center;color:var(--rose);font-size:.85rem;padding:2rem 0">الربح اليومي لا يغطي رسوم السحب — زِد رأس المال أولاً</div>';
   const maxLock=Math.max.apply(null,ok.map(function(x){return x.d.lock;}));
   const base=(plans[0].d)?plans[0].d.lock:null;
-  const fmtM=function(k){const net=k*C*r-F;return net>0?fmt0(net*30.4):'—';};
+  const fmtM=function(k){const net=k*C*r-F,m=net*30.4;return net>0?(m<0.5?fmt(m):fmt0(m)):'—';};
   let h='<div class="st-intro"><b style="color:var(--ink)">نقطة القفل</b> = اليوم الذي يعود فيه كامل رأس مالك الأصلي نقداً إلى جيبك — بعده تلعب بفلوس المنصة. اختر وتيرة السحب في مرحلة الحصاد: كل ما قلّت السحبات قلّت الرسوم وقصُر الانتظار — مقابل بقاء الأرباح أطول داخل البوت.</div>';
   h+='<div class="st-freq-title st-fade">وتيرة سحب الأرباح <span class="scope">— مرحلة الحصاد فقط</span></div>';
   h+='<div class="st-freq st-fade" role="group" aria-label="وتيرة سحب الأرباح">';
