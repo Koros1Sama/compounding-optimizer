@@ -543,7 +543,7 @@ body.rate-empty #hero-sub{
         <div class="tlbl">عندما تصل أرباحك المتراكمة إلى</div>
         <div class="tval" id="hero-threshold">$0</div>
         <div class="tsub" id="hero-sub">—</div>
-        <button type="button" id="btn-commit" class="commit-toggle" aria-pressed="false"><svg class="icn"><use href="#i-clock"/></svg><span id="commit-lbl">وضع الالتزام — أيام كاملة</span></button>
+        <button type="button" id="btn-commit" class="commit-toggle" aria-pressed="false" hidden><svg class="icn"><use href="#i-clock"/></svg><span id="commit-lbl">وضع الالتزام — أيام كاملة</span></button>
         <div class="cycle-chips">
           <div class="chip"><div class="cl">يُضاف لرأس المال</div><div class="cv em" id="chip-net">$0</div></div>
           <div class="chip"><div class="cl">الرسوم كنسبة</div><div class="cv cy" id="chip-feeratio">0%</div></div>
@@ -575,7 +575,7 @@ body.rate-empty #hero-sub{
               <div class="bar-bg"><div class="bar-fill" id="prog-fill"></div></div>
               <div class="cstat">
                 <div class="csi"><div class="cl">المتبقي للحد</div><div class="cv" id="ss-remaining">$0</div></div>
-                <div class="csi go"><div class="cl" id="ss-days-label">الأيام المتبقية</div><div class="cv em" id="ss-days">—</div></div>
+                <div class="csi go"><div class="cl" id="ss-days-label">الوقت المتبقي</div><div class="cv em" id="ss-days">—</div></div>
               </div>
               <div class="go-banner" id="go-banner">
     <div style="font-size:1.1rem;margin-bottom:6px">✓ اكتملت الدورة بنجاح!</div>
@@ -991,8 +991,9 @@ const FEE=1; // رسوم ثابتة $1 لكل سحبة — عدّلها من ه�
 let HARVEST_W=30;
 try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||hw==='once')HARVEST_W=(hw==='once'?Infinity:+hw);}catch(e){}
 // وضع الالتزام: تقريب كل الانتظارات لأيام كاملة (تأخير) — لمن يسحب في موعد ثابت ولا يريد فواصل/انتظار المبلغ بالضبط
+// الزر مخفي حالياً بقرار المالك (موجود بالكود — أزل خاصية hidden من الزر لإرجاعه)، والوضع لا يشتغل ما دام الزر مخفياً
 let COMMIT=false;
-try{COMMIT=localStorage.getItem('co-commit')==='1';}catch(e){}
+try{const cb=$('btn-commit');COMMIT=!!cb&&!cb.hidden&&localStorage.getItem('co-commit')==='1';}catch(e){}
 const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
 const wVal=function(w){return w==='once'?Infinity:+w;};
 const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
@@ -1159,8 +1160,11 @@ function calculate(){
   const fl=$('prog-fill');fl.style.width=prog+'%';fl.classList.toggle('over',reached);
   animateVal($('ss-remaining'),rem>0?rem:0,{prefix:'$',decimals:2});
   const sd=$('ss-days'),sdl=$('ss-days-label');
-  if(reached){sd.textContent='0';sdl.textContent='وصلت للحد!';}
-  else if(r>0&&rem>0){sdl.textContent='الأيام المتبقية';animateVal(sd,Math.ceil(drem),{suffix:' يوم',decimals:0});}
+  if(reached){if(sd._animId){cancelAnimationFrame(sd._animId);sd._animId=null;}sd.textContent='0';sdl.textContent='وصلت للحد!';}
+  else if(r>0&&rem>0){sdl.textContent='الوقت المتبقي';
+    // الوقت المتبقي بدقة (كسور أيام — وساعات لو أقل من نصف يوم)؛ التقريب ليوم كامل فقط في وضع الالتزام
+    if(COMMIT){animateVal(sd,Math.ceil(drem),{suffix:' يوم',decimals:0});}
+    else{if(sd._animId){cancelAnimationFrame(sd._animId);sd._animId=null;}sd.textContent=arDaysF(drem);}}
   else{sdl.textContent='أدخل العائد';animateVal(sd,null,{fallback:'—'});}
   $('go-banner').style.display=reached?'block':'none';
 
