@@ -141,6 +141,10 @@ h1.deco{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:700;line-height:1.15;lett
 .threshold-hero .tlbl{font-size:.82rem;color:var(--ink-dim);margin-bottom:.3rem}
 .threshold-hero .tval{font-family:var(--font-num);font-size:clamp(2.8rem,9vw,4.2rem);font-weight:700;line-height:1;background:var(--gt);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;direction:ltr;font-variant-numeric:tabular-nums}
 .threshold-hero .tsub{font-size:.8rem;color:var(--ink-faint);margin-top:.5rem;line-height:1.6;transition:opacity .2s ease}
+.commit-toggle{display:inline-flex;align-items:center;gap:.45rem;margin-top:.6rem;padding:.45rem .85rem;border-radius:50px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--ink-dim);font-family:var(--font-ar);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .25s var(--ease);flex-shrink:0}
+.commit-toggle:hover{border-color:var(--c1);color:var(--ink)}
+.commit-toggle .icn{width:15px;height:15px;flex-shrink:0}
+.commit-toggle.on{background:color-mix(in srgb,var(--c1) 16%,transparent);border-color:color-mix(in srgb,var(--c1) 55%,transparent);color:var(--c1)}
 .threshold-hero .tsub b{color:var(--c2);font-family:var(--font-num)}
 .cycle-chips{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1.1rem}
 .chip{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:var(--r-sm);padding:.7rem .8rem;text-align:center}
@@ -539,6 +543,7 @@ body.rate-empty #hero-sub{
         <div class="tlbl">عندما تصل أرباحك المتراكمة إلى</div>
         <div class="tval" id="hero-threshold">$0</div>
         <div class="tsub" id="hero-sub">—</div>
+        <button type="button" id="btn-commit" class="commit-toggle" aria-pressed="false"><svg class="icn"><use href="#i-clock"/></svg><span id="commit-lbl">وضع الالتزام — أيام كاملة</span></button>
         <div class="cycle-chips">
           <div class="chip"><div class="cl">يُضاف لرأس المال</div><div class="cv em" id="chip-net">$0</div></div>
           <div class="chip"><div class="cl">الرسوم كنسبة</div><div class="cv cy" id="chip-feeratio">0%</div></div>
@@ -636,7 +641,7 @@ body.rate-empty #hero-sub{
   <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
-        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub">كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
+        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub" id="cycle-sub">كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
         <div class="tbl-wrap">
           <table><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th class="col-tot">إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
         </div>
@@ -985,6 +990,9 @@ const FEE=1; // رسوم ثابتة $1 لكل سحبة — عدّلها من ه�
 // وتيرة السحب في مرحلة الحصاد (تُقرأ من هنا + تُحفظ باختيار المستخدم)
 let HARVEST_W=30;
 try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||hw==='once')HARVEST_W=(hw==='once'?Infinity:+hw);}catch(e){}
+// وضع الالتزام: تقريب كل الانتظارات لأيام كاملة (تأخير) — لمن يسحب في موعد ثابت ولا يريد فواصل/انتظار المبلغ بالضبط
+let COMMIT=false;
+try{COMMIT=localStorage.getItem('co-commit')==='1';}catch(e){}
 const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
 const wVal=function(w){return w==='once'?Infinity:+w;};
 const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
@@ -1059,7 +1067,7 @@ const threshold=(C,F)=>Math.sqrt(2*C*F)+F;
 function optDays(C,r,F){if(r<=0||C<=0)return 0;const a=F/C;let bN=1,bG=1+r-a;for(let n=2;n<=80;n++){const base=1+n*r-a;if(base<=0)break;const g=Math.pow(base,1/n);if(g>bG){bG=g;bN=n;}}return bN;}
 function doublingTime(C0,r,F){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<2*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
 function simulate(C0,r,F,days){if(r<=0)return[{day:0,capital:C0},{day:days,capital:C0}];let cap=C0,since=0,len=optDays(cap,r,F),h=[{day:0,capital:C0}],step=Math.max(1,Math.ceil(days/140));for(let d=1;d<=days;d++){since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}if(d%step===0||d===days)h.push({day:d,capital:cap+cap*r*since});}return h;}
-function projectCycles(C0,r,F,max){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F),d=r>0?T/(C*r):0,net=r>0?T-F:0,nC=C+net;tot+=d;out.push({i,C,T,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(net<=0||C>C0*60)break;}return out;}
+function projectCycles(C0,r,F,max,commit){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F);let d,Td;if(r>0){if(commit){d=Math.max(1,Math.ceil(T/(C*r)));Td=C*r*d;}else{d=T/(C*r);Td=T;}}else{d=0;Td=0;}const net=r>0?Td-F:0,nC=C+net;tot+=d;out.push({i,C,T:Td,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(net<=0||C>C0*60)break;}return out;}
 // صيغة أيام عشرية: سحب بأي لحظة عند بلوغ الحد بالضبط
 const arDaysF=function(d){if(d<=0)return'—';if(d<0.5)return Math.max(1,Math.round(d*24))+' ساعة';const w=Math.round(d*10)/10;return (w<10?w.toFixed(1):w.toFixed(0))+' يوم';};
 const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -1136,7 +1144,10 @@ function calculate(){
 
   // hero (animated)
   animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
-  $('hero-sub').innerHTML=(r>0&&!tooSmall)?`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:(tooSmall?'الحد مرجعي ومستقل عن النسبة — زِد رأس المال مقابل الرسوم ليعمل التدوير':'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام');
+  $('hero-sub').innerHTML=(r>0&&!tooSmall)?(COMMIT
+    ?`أعد التدوير كل <b>${arDays(Math.ceil(daysC))}</b> باليوم الكامل &nbsp;•&nbsp; اسحب كل ما تجمع في موعدك — عند الحد الأمثل أو بعده`
+    :`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`)
+    :(tooSmall?'الحد مرجعي ومستقل عن النسبة — زِد رأس المال مقابل الرسوم ليعمل التدوير':'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام');
   animateVal($('chip-net'),net,{prefix:'$',decimals:2});
   animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
 
@@ -1227,7 +1238,8 @@ function calculate(){
 
   // table (static update) — gated like every other component: no recycle guidance while tooSmall,
   // no phantom single $0.00 row at r=0 (placeholder instead)
-  const cyc=(r>0&&!tooSmall)?projectCycles(C,r,F,10):[],tb=$('cycle-body');
+  const cyc=(r>0&&!tooSmall)?projectCycles(C,r,F,10,COMMIT):[],tb=$('cycle-body');
+  const cs=$('cycle-sub');if(cs)cs.innerHTML=COMMIT?'كل صف دورة كاملة <b>بيوم كامل</b> — «اسحب عند» هو المبلغ المتجمع فعلياً في موعدك الملتزم (دائماً عند الحد الأمثل أو بعده).':'كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.';
   if(!cyc.length){
     tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);font-size:.8rem;padding:1rem">'+(tooSmall?'رأس مال صغير مقابل الرسوم — زِد رأس المال ليعمل التدوير':'أدخل العائد اليومي لعرض دورات التدوير')+'</td></tr>';
   } else {
@@ -1239,16 +1251,16 @@ function calculate(){
         cells[0].textContent=c.i;
         cells[1].textContent=fmt(c.C);
         cells[2].innerHTML=`<span class="tc">${fmt(c.T)}</span>`;
-        cells[3].textContent=c.d>0?arDaysF(c.d):'—';
+        cells[3].textContent=c.d>0?(COMMIT?arDays(c.d):arDaysF(c.d)):'—';
         cells[4].innerHTML=`<span class="ac">${fmt(c.net)}</span>`;
         cells[5].innerHTML=`${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}`;
-        cells[6].textContent=c.tot>0?arDaysF(c.tot):'—';
+        cells[6].textContent=c.tot>0?(COMMIT?arDays(c.tot):arDaysF(c.tot)):'—';
         cells[6].className='col-tot';
       }
     });
     } else {
       tb.innerHTML='';
-      cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDaysF(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?arDaysF(c.tot):'—'}</td>`;tb.appendChild(tr);});
+      cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?(COMMIT?arDays(c.d):arDaysF(c.d)):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?(COMMIT?arDays(c.tot):arDaysF(c.tot)):'—'}</td>`;tb.appendChild(tr);});
     }
   }
 
@@ -1432,6 +1444,13 @@ function runPulse(st){
 
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// وضع الالتزام: زر الهيرو (يفعّل أيام كاملة في الهيرو + جدول الدورات)
+function syncCommitBtn(){const b=$('btn-commit');if(!b)return;b.classList.toggle('on',COMMIT);b.setAttribute('aria-pressed',COMMIT?'true':'false');const l=$('commit-lbl');if(l)l.textContent=COMMIT?'وضع الالتزام مفعّل — أيام كاملة':'وضع الالتزام — أيام كاملة';}
+const btnCommit=$('btn-commit');
+if(btnCommit)btnCommit.addEventListener('click',()=>{COMMIT=!COMMIT;try{localStorage.setItem('co-commit',COMMIT?'1':'0');}catch(e){}syncCommitBtn();calculate();});
+syncCommitBtn();
+
 loadData();calculate();onInput();
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(calculate,200);});
 
