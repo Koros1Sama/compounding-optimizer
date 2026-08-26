@@ -1574,7 +1574,7 @@ function buildStratContent(){
     {k:1,n:'السحب العادي',sub:'بدون تدوير'},
     {k:1.25,n:'S1 — الموصى بها',sub:'نقطة التوازن',rec:true},
     {k:1.5,n:'S2 — الوسطية'},
-    {k:2,n:'التضاعف الكامل',sub:'فكرتك الأصلية'},
+    {k:2,n:'التضاعف الكامل',sub:'ضاعف ثم اسحب'},
     {k:3,n:'أقصى جرأة'}
   ];
   const plans=[];defs.forEach(function(p){plans.push({p:p,d:planData(C,r,F,p.k)});});
@@ -1658,7 +1658,7 @@ function buildStratContent(){
   if(k2&&base){
     const halfCost=(s2)?bd((k2.lock-s2.lock)+' يوم'):'10 أيام تقريباً';
     h+='<div class="st-acc st-fade" style="animation-delay:.84s"><button type="button" class="st-acc-head"><span class="st-acc-txt"><span class="st-acc-title" style="color:var(--c2)">متى تختار '+bd('2×')+' أو '+bd('3×')+'؟</span></span><span class="st-acc-side"><span class="st-arrow">▾</span></span></button><div class="st-acc-body"><div><ul class="st-list">'+
-      '<li>فكرتك الأصلية: <b>'+arDays(k2.t1)+'</b> تدوير حتى التضاعف ثم <b>'+arDays(k2.t2)+'</b> سحب فقط — القفل بعد <b>'+arDays(k2.lock)+'</b> ('+bd('+'+(k2.lock-base))+' عن العادي).</li>'+
+      '<li>المسار: <b>'+arDays(k2.t1)+'</b> تدوير حتى التضاعف ثم <b>'+arDays(k2.t2)+'</b> سحب فقط — القفل بعد <b>'+arDays(k2.lock)+'</b> ('+bd('+'+(k2.lock-base))+' عن العادي).</li>'+
       '<li>القاعدة: كل نصف مضاعف إضافي يكلف ~'+halfCost+' انتظار مقابل رأس مال أكبر يبقى يعمل — قرار ثقة بالمنصة لا حسابات.</li>'+
       '</ul></div></div></div>';
   }
