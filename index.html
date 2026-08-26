@@ -1136,7 +1136,7 @@ function calculate(){
 
   // hero (animated)
   animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
-  $('hero-sub').innerHTML=r>0?`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام';
+  $('hero-sub').innerHTML=(r>0&&!tooSmall)?`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:(tooSmall?'الحد مرجعي ومستقل عن النسبة — زِد رأس المال مقابل الرسوم ليعمل التدوير':'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام');
   animateVal($('chip-net'),net,{prefix:'$',decimals:2});
   animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
 
@@ -1219,14 +1219,18 @@ function calculate(){
     const fastest=Math.min.apply(null,locks);
     $('safety-days').textContent=(isFinite(fastest)&&fastest>0&&fastest<8000)?('≈ '+fastest+' يوم'):'—';
     const netDaily=C*r-F;
-    $('passive-monthly').textContent=(netDaily>0?fmt0(netDaily*30.4):'—')+'/شهر';
+    $('passive-monthly').textContent=netDaily>0?fmt0(netDaily*30.4):'—';
   } else {
     $('safety-days').textContent='—';
     $('passive-monthly').textContent='—';
   }
 
-  // table (static update)
-  const cyc=projectCycles(C,r,F,10),tb=$('cycle-body');
+  // table (static update) — gated like every other component: no recycle guidance while tooSmall,
+  // no phantom single $0.00 row at r=0 (placeholder instead)
+  const cyc=(r>0&&!tooSmall)?projectCycles(C,r,F,10):[],tb=$('cycle-body');
+  if(!cyc.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);font-size:.8rem;padding:1rem">'+(tooSmall?'رأس مال صغير مقابل الرسوم — زِد رأس المال ليعمل التدوير':'أدخل العائد اليومي لعرض دورات التدوير')+'</td></tr>';
+  } else {
   const existingRows=tb.querySelectorAll('tr');
   if(existingRows.length===cyc.length){
     cyc.forEach((c,idx)=>{
@@ -1242,9 +1246,10 @@ function calculate(){
         cells[6].className='col-tot';
       }
     });
-  } else {
-    tb.innerHTML='';
-    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDaysF(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?arDaysF(c.tot):'—'}</td>`;tb.appendChild(tr);});
+    } else {
+      tb.innerHTML='';
+      cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDaysF(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?arDaysF(c.tot):'—'}</td>`;tb.appendChild(tr);});
+    }
   }
 
   // chart
