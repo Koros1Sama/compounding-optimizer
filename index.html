@@ -1059,7 +1059,9 @@ const threshold=(C,F)=>Math.sqrt(2*C*F)+F;
 function optDays(C,r,F){if(r<=0||C<=0)return 0;const a=F/C;let bN=1,bG=1+r-a;for(let n=2;n<=80;n++){const base=1+n*r-a;if(base<=0)break;const g=Math.pow(base,1/n);if(g>bG){bG=g;bN=n;}}return bN;}
 function doublingTime(C0,r,F){if(r<=0)return 0;let cap=C0,day=0,since=0,len=optDays(cap,r,F),g=6000;while(cap+cap*r*since<2*C0&&day<g){day++;since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}}return day>=g?0:day;}
 function simulate(C0,r,F,days){if(r<=0)return[{day:0,capital:C0},{day:days,capital:C0}];let cap=C0,since=0,len=optDays(cap,r,F),h=[{day:0,capital:C0}],step=Math.max(1,Math.ceil(days/140));for(let d=1;d<=days;d++){since++;if(since>=len){cap+=cap*r*len-F;since=0;len=optDays(cap,r,F);}if(d%step===0||d===days)h.push({day:d,capital:cap+cap*r*since});}return h;}
-function projectCycles(C0,r,F,max){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F),d=r>0?optDays(C,r,F):0,p=r>0?C*r*d:0,net=r>0?p-F:0,nC=C+net;tot+=d;out.push({i,C,T,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(C>C0*60||nC<=out[out.length-1].C+0.001)break;}return out;}
+function projectCycles(C0,r,F,max){const out=[];let C=C0,tot=0,dbl=r>0?2*C0:Infinity;for(let i=1;i<=max;i++){const T=threshold(C,F),d=r>0?T/(C*r):0,net=r>0?T-F:0,nC=C+net;tot+=d;out.push({i,C,T,d,net,nC,tot,doubled:nC>=dbl&&C<dbl});C=nC;if(net<=0||C>C0*60)break;}return out;}
+// صيغة أيام عشرية: سحب بأي لحظة عند بلوغ الحد بالضبط
+const arDaysF=function(d){if(d<=0)return'—';if(d<0.5)return Math.max(1,Math.round(d*24))+' ساعة';const w=Math.round(d*10)/10;return (w<10?w.toFixed(1):w.toFixed(0))+' يوم';};
 const fmt=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmt0=n=>'$'+Math.round(n).toLocaleString('en-US');
 const arDays=d=>{if(d<=0)return'—';const r=Math.round(d);return r===1?'يوم واحد (1)':r===2?'يومين (2)':r<=10?r+' أيام':r+' يوم';};
@@ -1123,7 +1125,7 @@ function calculate(){
   const C=Math.max(.01,getNum('principal',0));
   const r=Math.max(0,getNum('rate',0))/100;
   const F=FEE;
-  const T=threshold(C,F),net=T-F,feeRatio=T>0?(F/T)*100:0,days=optDays(C,r,F);
+  const T=threshold(C,F),net=T-F,feeRatio=T>0?(F/T)*100:0,days=optDays(C,r,F),daysC=r>0?T/(C*r):0;
   document.body.classList.toggle('rate-empty', r <= 0);
 
   // guard: capital too small
@@ -1134,7 +1136,7 @@ function calculate(){
 
   // hero (animated)
   animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
-  $('hero-sub').innerHTML=r>0?`أعد التدوير كل <b>${arDays(days)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام';
+  $('hero-sub').innerHTML=r>0?`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`:'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام';
   animateVal($('chip-net'),net,{prefix:'$',decimals:2});
   animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
 
@@ -1233,16 +1235,16 @@ function calculate(){
         cells[0].textContent=c.i;
         cells[1].textContent=fmt(c.C);
         cells[2].innerHTML=`<span class="tc">${fmt(c.T)}</span>`;
-        cells[3].textContent=c.d>0?arDays(c.d):'—';
+        cells[3].textContent=c.d>0?arDaysF(c.d):'—';
         cells[4].innerHTML=`<span class="ac">${fmt(c.net)}</span>`;
         cells[5].innerHTML=`${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}`;
-        cells[6].textContent=c.tot>0?Math.round(c.tot)+' يوم':'—';
+        cells[6].textContent=c.tot>0?arDaysF(c.tot):'—';
         cells[6].className='col-tot';
       }
     });
   } else {
     tb.innerHTML='';
-    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDays(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?Math.round(c.tot)+' يوم':'—'}</td>`;tb.appendChild(tr);});
+    cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?arDaysF(c.d):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?arDaysF(c.tot):'—'}</td>`;tb.appendChild(tr);});
   }
 
   // chart
