@@ -540,24 +540,25 @@ body.rate-empty #hero-sub{
     </div>
     <div class="col-7">
       <div class="shell"><div class="core threshold-hero" id="result-hero-card">
-        <div class="tlbl">عندما تصل أرباحك المتراكمة إلى</div>
+        <div class="tlbl" id="hero-tlbl">عندما تصل أرباحك المتراكمة إلى</div>
         <div class="tval" id="hero-threshold">$0</div>
         <div class="tsub" id="hero-sub">—</div>
         <button type="button" id="btn-commit" class="commit-toggle" aria-pressed="false" hidden><svg class="icn"><use href="#i-clock"/></svg><span id="commit-lbl">وضع الالتزام — أيام كاملة</span></button>
+        <button type="button" id="btn-protocol" class="commit-toggle" aria-pressed="false"><svg class="icn"><use href="#i-infinity"/></svg><span id="protocol-lbl">معاينة البروتوكول القادم</span></button>
         <div class="cycle-chips">
           <div class="chip"><div class="cl">يُضاف لرأس المال</div><div class="cv em" id="chip-net">$0</div></div>
           <div class="chip"><div class="cl">الرسوم كنسبة</div><div class="cv cy" id="chip-feeratio">0%</div></div>
         </div>
         <div class="hero-tip">
           <span class="ht-icon"><svg class="icn"><use href="#i-sparkles"/></svg></span>
-          <span>اسحب الأرباح فور بلوغ هذا الرقم أو تجاوزه. السحب المبكر قبله يلتهم نسبة أكبر في الرسوم.</span>
+          <span id="hero-tip-txt">اسحب الأرباح فور بلوغ هذا الرقم أو تجاوزه. السحب المبكر قبله يلتهم نسبة أكبر في الرسوم.</span>
         </div>
       </div></div>
     </div>
   </section>
 
   <!-- CYCLE TRACKER -->
-  <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
+  <section class="bento reveal" id="sec-tracker" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
         <div class="head"><div class="ic"><svg class="icn"><use href="#i-clock"/></svg></div><div><div class="section-title">حالة دورتي — كم باقي؟</div><div class="section-sub">شوف أرباحك المتراكمة على المنصة واكتبها هنا</div></div></div>
@@ -611,7 +612,7 @@ body.rate-empty #hero-sub{
           <div class="head"><div class="ic"><svg class="icn"><use href="#i-rocket"/></svg></div><div><div class="section-title">رحلة المضاعفة</div><div class="section-sub">محطات تضاعف رأس مالك</div></div></div>
           <div class="journey" id="journey"></div>
         </div>
-        <div class="col-5" style="display:flex;flex-direction:column;gap:.85rem;justify-content:center">
+        <div class="col-5" id="col-exit-income" style="display:flex;flex-direction:column;gap:.85rem;justify-content:center">
           <div id="safety-point">
             <div class="head" style="margin-bottom:.4rem"><div class="ic" style="color:var(--rose)"><svg class="icn"><use href="#i-shield"/></svg></div><div class="section-title">نقطة الأمان</div></div>
             <div style="font-size:.78rem;color:var(--ink-dim);line-height:1.7">بعد <b style="color:var(--rose);font-family:var(--font-num)" id="safety-days">—</b> يعود <b>رأس مالك الأصلي كاملاً نقداً لجيبك</b> (أسرع نقطة قفل) — وما بعدها تلعب بفلوس المنصة.</div>
@@ -641,9 +642,9 @@ body.rate-empty #hero-sub{
   <section class="bento reveal" style="margin-bottom:clamp(.8rem,2vw,1.2rem)">
     <div class="col-12">
       <div class="shell"><div class="core">
-        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub" id="cycle-sub">كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
+        <div class="head"><div class="ic"><svg class="icn"><use href="#i-list"/></svg></div><div><div class="section-title" id="cycle-title">دليل الدورات — خطوتك القادمة</div><div class="section-sub" id="cycle-sub">كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.</div></div></div>
         <div class="tbl-wrap">
-          <table><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th class="col-tot">إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
+          <table id="cycle-table"><thead><tr><th>الدورة</th><th>رأس المال</th><th>اسحب عند</th><th>الانتظار</th><th>الصافي المضاف</th><th>رأس المال الجديد</th><th class="col-tot">إجمالي الأيام</th></tr></thead><tbody id="cycle-body"></tbody></table>
         </div>
       </div></div>
     </div>
@@ -994,6 +995,12 @@ try{const hw=localStorage.getItem('co-hfreq');if(hw==='1'||hw==='7'||hw==='30'||
 // الزر مخفي حالياً بقرار المالك (موجود بالكود — أزل خاصية hidden من الزر لإرجاعه)، والوضع لا يشتغل ما دام الزر مخفياً
 let COMMIT=false;
 try{const cb=$('btn-commit');COMMIT=!!cb&&!cb.hidden&&localStorage.getItem('co-commit')==='1';}catch(e){}
+// معاينة البروتوكول اللامركزي القادم: الأرباح مدموجة برأس المال تلقائياً — لا رسوم ولا سحب ولا حد،
+// نمو مركب نقي C·(1+r)^d والتضاعف كل ln(2)/ln(1+r) يوماً (للمعاينة فقط — بافتراض نفس العائد المدخل)
+let PROTOCOL=false;
+try{const pb=$('btn-protocol');PROTOCOL=!!pb&&!pb.hidden&&localStorage.getItem('co-protocol')==='1';}catch(e){}
+const protoDays=(r,mult)=>r>0?Math.log(mult)/Math.log(1+r):0;
+const protoSeries=function(C0,r,days){const out=[],n=140;for(let i=0;i<=n;i++){const d=days*i/n;out.push({day:d,capital:C0*Math.pow(1+r,d)});}return out;};
 const FREQ_DEFS=[[1,'يومي'],[7,'أسبوعي'],[30,'شهري'],['once','دفعة واحدة']];
 const wVal=function(w){return w==='once'?Infinity:+w;};
 const wLabel=function(w){if(w===1)return'يومي';if(w===7)return'أسبوعي';if(w===30)return'شهري';return'دفعة واحدة';};
@@ -1137,20 +1144,43 @@ function calculate(){
   const T=threshold(C,F),net=T-F,feeRatio=T>0?(F/T)*100:0,days=optDays(C,r,F),daysC=r>0?T/(C*r):0;
   document.body.classList.toggle('rate-empty', r <= 0);
 
-  // guard: capital too small
-  const cycleNet=r>0?(C*r*days-F):0;const tooSmall=r>0&&cycleNet<=0;const wb=$('warn-banner');
+  // guard: capital too small — لا معنى له في البروتوكول (لا رسوم أصلاً)
+  const cycleNet=r>0?(C*r*days-F):0;const tooSmall=!PROTOCOL&&r>0&&cycleNet<=0;const wb=$('warn-banner');
   if(C<=0||isNaN(C)){wb.textContent='أدخل رأس مال صحيح أكبر من صفر';wb.classList.add('show');}
   else if(tooSmall){wb.textContent='رأس مال صغير جداً مقابل الرسوم — كل دورة تخسر مالاً. زِد رأس المال حتى يصبح ربحك اليومي أكبر من الرسوم';wb.classList.add('show');}
   else wb.classList.remove('show');
 
+  // أقسام لا معنى لها في البروتوكول: متتبع الحد (لا حد) + نقطة الأمان/وضع الدخل (سحب برسوم)
+  const secTr=$('sec-tracker');if(secTr)secTr.style.display=PROTOCOL?'none':'';
+  const colExit=$('col-exit-income');if(colExit)colExit.style.display=PROTOCOL?'none':'';
+
   // hero (animated)
-  animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
-  $('hero-sub').innerHTML=(r>0&&!tooSmall)?(COMMIT
-    ?`أعد التدوير كل <b>${arDays(Math.ceil(daysC))}</b> باليوم الكامل &nbsp;•&nbsp; اسحب كل ما تجمع في موعدك — عند الحد الأمثل أو بعده`
-    :`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`)
-    :(tooSmall?'الحد مرجعي ومستقل عن النسبة — زِد رأس المال مقابل الرسوم ليعمل التدوير':'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام');
-  animateVal($('chip-net'),net,{prefix:'$',decimals:2});
-  animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
+  const tl=$('hero-tlbl'),htx=$('hero-tip-txt');
+  if(PROTOCOL){
+    if(tl)tl.textContent='رأس مالك بعد سنة يصبح';
+    if(htx)htx.textContent='معاينة البروتوكول: الأرباح تندمج برأس مالك تلقائياً — لا حد سحب ولا رسوم. تخارجك عبر بيع حصتك في الـMarketplace. الأرقام بافتراض نفس العائد اليومي المدخل.';
+    if(r>0){
+      animateVal($('hero-threshold'),C*Math.pow(1+r,365),{prefix:'$',decimals:0});
+      $('hero-sub').innerHTML=`التراكم مدموج تلقائياً — <b>بدون رسوم ولا سحب</b> &nbsp;•&nbsp; رأس مالك يتضاعف كل <b>${arDaysF(protoDays(r,2))}</b>`;
+      animateVal($('chip-net'),C*r,{prefix:'$',decimals:2});
+      animateVal($('chip-feeratio'),0,{suffix:'%',decimals:0});
+    }else{
+      animateVal($('hero-threshold'),null,{fallback:'—'});
+      $('hero-sub').textContent='أدخل العائد اليومي لمعاينة نمو البروتوكول';
+      animateVal($('chip-net'),null,{fallback:'—'});
+      animateVal($('chip-feeratio'),null,{fallback:'—'});
+    }
+  }else{
+    if(tl)tl.textContent='عندما تصل أرباحك المتراكمة إلى';
+    if(htx)htx.textContent='اسحب الأرباح فور بلوغ هذا الرقم أو تجاوزه. السحب المبكر قبله يلتهم نسبة أكبر في الرسوم.';
+    animateVal($('hero-threshold'),T,{prefix:'$',decimals:2});
+    $('hero-sub').innerHTML=(r>0&&!tooSmall)?(COMMIT
+      ?`أعد التدوير كل <b>${arDays(Math.ceil(daysC))}</b> باليوم الكامل &nbsp;•&nbsp; اسحب كل ما تجمع في موعدك — عند الحد الأمثل أو بعده`
+      :`أعد التدوير كل <b>${arDaysF(daysC)}</b> &nbsp;•&nbsp; الحد مرجعي ومستقل عن النسبة`)
+      :(tooSmall?'الحد مرجعي ومستقل عن النسبة — زِد رأس المال مقابل الرسوم ليعمل التدوير':'الحد مرجعي ومستقل عن النسبة — أدخل العائد لمعرفة الأيام');
+    animateVal($('chip-net'),net,{prefix:'$',decimals:2});
+    animateVal($('chip-feeratio'),feeRatio,{suffix:'%',decimals:1});
+  }
 
   // tracker (animated)
   const cur=Math.max(0,getNum('current-profit',0));
@@ -1170,19 +1200,19 @@ function calculate(){
 
   // annual (animated)
   if(r>0&&!tooSmall){
-    const f365=simulate(C,r,F,365).slice(-1)[0].capital;
+    const f365=PROTOCOL?C*Math.pow(1+r,365):simulate(C,r,F,365).slice(-1)[0].capital;
     animateVal($('stat-annual'),f365,{prefix:'$',decimals:0});
-    $('stat-annual-sub').innerHTML=`×${(f365/C).toFixed(1)} نمو &nbsp;•&nbsp; +${fmt0(f365-C)} ربح`;
+    $('stat-annual-sub').innerHTML=`×${(f365/C).toFixed(1)} نمو &nbsp;•&nbsp; +${fmt0(f365-C)} ${PROTOCOL?'— تراكم مدموج':'ربح'}`;
   } else {
     animateVal($('stat-annual'),null,{fallback:'—'});
     $('stat-annual-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
   }
 
   // doubling (animated)
-  const dt=doublingTime(C,r,F);
+  const dt=PROTOCOL?protoDays(r,2):doublingTime(C,r,F);
   if(dt>0&&!tooSmall){
     animateVal($('stat-double'),dt,{suffix:' يوم',decimals:0});
-    $('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; <span class="bdi">@ ${(r*100).toFixed(2)}%</span>`;
+    $('stat-double-sub').innerHTML=`≈ ${(dt/30.4).toFixed(1)} شهر &nbsp;•&nbsp; <span class="bdi">@ ${(r*100).toFixed(2)}%${PROTOCOL?' — بدون رسوم':''}</span>`;
   } else {
     animateVal($('stat-double'),null,{fallback:'—'});
     $('stat-double-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
@@ -1190,11 +1220,10 @@ function calculate(){
 
   // monthly growth (animated)
   if(r>0&&!tooSmall){
-    const oF=simulate(C,r,F,365).slice(-1)[0].capital;
-    const mm=Math.pow(oF/C,30.4/365);
+    const mm=PROTOCOL?Math.pow(1+r,30.4):(function(){const oF=simulate(C,r,F,365).slice(-1)[0].capital;return Math.pow(oF/C,30.4/365);})();
     const pct=(mm-1)*100;
     animateVal($('stat-edge'),mm,{prefix:'×',decimals:2});
-    $('stat-edge-sub').innerHTML=`<b style="color:var(--c2)">+${pct.toFixed(0)}%</b> كل شهر &nbsp;•&nbsp; بعد الرسوم`;
+    $('stat-edge-sub').innerHTML=`<b style="color:var(--c2)">+${pct.toFixed(0)}%</b> كل شهر &nbsp;•&nbsp; ${PROTOCOL?'بدون رسوم':'بعد الرسوم'}`;
   } else {
     animateVal($('stat-edge'),null,{fallback:'—'});
     $('stat-edge-sub').textContent=tooSmall?'رأس مال صغير':'أدخل العائد';
@@ -1205,7 +1234,7 @@ function calculate(){
   if(r>0&&!tooSmall){
     let cap=C,td=0;
     const m=[{m:'البداية',v:C,t:'اليوم'},{m:'2×',v:2*C},{m:'4×',v:4*C},{m:'8×',v:8*C},{m:'16×',v:16*C},{m:'32×',v:32*C}];
-    for(let k=1;k<m.length;k++){const d=doublingTime(m[k-1].v,r,F);td+=d;m[k].t='~'+Math.round(td)+' يوم ('+(td/30.4).toFixed(1)+'ش)';}
+    for(let k=1;k<m.length;k++){const d=PROTOCOL?protoDays(r,2):doublingTime(m[k-1].v,r,F);td+=d;m[k].t='~'+Math.round(td)+' يوم ('+(td/30.4).toFixed(1)+'ش)';}
     const existingNodes=j.querySelectorAll('.jnode');
     if(existingNodes.length===m.length){
       m.forEach((mk,idx)=>{
@@ -1240,8 +1269,26 @@ function calculate(){
     $('passive-monthly').textContent='—';
   }
 
-  // table (static update) — gated like every other component: no recycle guidance while tooSmall,
-  // no phantom single $0.00 row at r=0 (placeholder instead)
+  // table (static update) — دليل الدورات (النظام الحالي) أو دليل المضاعفات (معاينة البروتوكول)
+  const ctT=$('cycle-title');
+  if(PROTOCOL){
+    if(ctT)ctT.textContent='دليل المضاعفات — البروتوكول';
+    const css=$('cycle-sub');if(css)css.innerHTML='نمو مدموج بدون رسوم ولا سحب — بافتراض نفس العائد اليومي المدخل. <b style="color:var(--gold)">↑</b> = التضاعف الأول.';
+    const ct=$('cycle-table');
+    if(ct){
+      let prs='',prev=1;
+      [1.5,2,3,5,10,20,50,100].forEach(function(mu){
+        const dTot=r>0?protoDays(r,mu):0,dSeg=r>0?protoDays(r,mu/prev):0;
+        prs+='<tr><td><span class="tc">×'+mu+'</span>'+(mu===2?' <span class="mk">↑</span>':'')+'</td><td>'+fmt0(C*mu)+'</td><td>'+(dTot>0?arDaysF(dTot):'—')+'</td><td>'+(dSeg>0?arDaysF(dSeg):'—')+'</td></tr>';
+        prev=mu;
+      });
+      ct.innerHTML='<thead><tr><th>المضاعف</th><th>رأس المال</th><th>الوصول خلال</th><th>الفاصل عن السابق</th></tr></thead><tbody>'+prs+'</tbody>';
+      ct.dataset.proto='1';
+    }
+  }else{
+  if(ctT)ctT.textContent='دليل الدورات — خطوتك القادمة';
+  const cth=$('cycle-table');
+  if(cth&&cth.dataset&&cth.dataset.proto){cth.innerHTML=CYCLE_TABLE_ORIG;try{delete cth.dataset.proto;}catch(e){}}
   const cyc=(r>0&&!tooSmall)?projectCycles(C,r,F,10,COMMIT):[],tb=$('cycle-body');
   const cs=$('cycle-sub');if(cs)cs.innerHTML=COMMIT?'كل صف دورة كاملة <b>بيوم كامل</b> — «اسحب عند» هو المبلغ المتجمع فعلياً في موعدك الملتزم (دائماً عند الحد الأمثل أو بعده).':'كل صف دورة كاملة. <b style="color:var(--gold)">↑</b> = الدورة التي يتجاوز فيها رأس مالك ضعف بدايتك. لاحظ كيف يقل الانتظار مع نمو رأس المال.';
   if(!cyc.length){
@@ -1262,14 +1309,15 @@ function calculate(){
         cells[6].className='col-tot';
       }
     });
-    } else {
+  } else {
       tb.innerHTML='';
       cyc.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.i}</td><td>${fmt(c.C)}</td><td><span class="tc">${fmt(c.T)}</span></td><td>${c.d>0?(COMMIT?arDays(c.d):arDaysF(c.d)):'—'}</td><td><span class="ac">${fmt(c.net)}</span></td><td>${fmt(c.nC)}${c.doubled?' <span class="mk">↑</span>':''}</td><td class="col-tot">${c.tot>0?(COMMIT?arDays(c.tot):arDaysF(c.tot)):'—'}</td>`;tb.appendChild(tr);});
     }
   }
+  }
 
   // chart
-  if(r>0&&!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365);}
+  if(r>0&&!tooSmall&&C>0){drawChart(C,r,F,dt>0?Math.max(180,Math.ceil(dt*4)):365,PROTOCOL);}
   else if(r<=0){clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني');}
   else if(tooSmall){clearChart('العائد اليومي صغير جداً مقابل الرسوم — زِد رأس المال للنمو');}
   else{clearChart('أدخل رأس المال والعائد لعرض الرسم البياني');}
@@ -1312,20 +1360,16 @@ function drawChartFrame(st, hoverX) {
   ctx.beginPath(); ctx.arc(xS(0),yS(C0),4,0,7); ctx.fillStyle=col.c2; ctx.fill();
   const last=opt[opt.length-1]; ctx.beginPath(); ctx.arc(xS(last.day),yS(last.capital),4,0,7); ctx.fillStyle=col.c1; ctx.fill();
   
-  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText('● مع التدوير الأمثل (بالرسوم)',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText('--- بدون تدوير — سحب بالأخير',pad.l+6,pad.t+28);
+  ctx.textAlign='left'; ctx.font='11px IBM Plex Sans Arabic'; ctx.fillStyle=col.c1; ctx.fillText(st.lbl1||'● مع التدوير الأمثل (بالرسوم)',pad.l+6,pad.t+12); ctx.fillStyle='rgba(251,191,36,.9)'; ctx.fillText(st.lbl2||'--- بدون تدوير — سحب بالأخير',pad.l+6,pad.t+28);
 
   if (hoverX !== null && hoverX >= pad.l && hoverX <= W-pad.r) {
     const ratio = Math.max(0, Math.min(1, (hoverX - pad.l) / cW));
     const hoverDay = Math.round(ratio * days);
-    let optCap = C0, ncCap = C0 + (C0 * st.r * hoverDay);
-    if(hoverDay >= st.days) ncCap -= st.F; // الرسم الوحيد: سحبة واحدة في النهاية
-    for(let i=0; i<opt.length-1; i++) {
-        if(hoverDay >= opt[i].day && hoverDay <= opt[i+1].day) {
-            const dr = (hoverDay - opt[i].day) / (opt[i+1].day - opt[i].day || 1);
-            optCap = opt[i].capital + dr * (opt[i+1].capital - opt[i].capital); break;
-        }
-    }
-    if(hoverDay >= last.day) optCap = last.capital;
+    const interp = function(arr){ let v=arr[0].capital;
+      for(let i=0;i<arr.length-1;i++){ if(hoverDay>=arr[i].day&&hoverDay<=arr[i+1].day){ const dr=(hoverDay-arr[i].day)/((arr[i+1].day-arr[i].day)||1); v=arr[i].capital+dr*(arr[i+1].capital-arr[i].capital); break; } }
+      if(hoverDay>=arr[arr.length-1].day)v=arr[arr.length-1].capital; return v; };
+    const optCap = interp(opt);
+    const ncCap = (nc.length<=2) ? (C0+(C0*st.r*hoverDay)-(hoverDay>=st.days?st.F:0)) : interp(nc);
     const hx = xS(hoverDay), hyOpt = yS(optCap), hyNc = yS(ncCap);
     
     ctx.beginPath(); ctx.moveTo(hx, pad.t); ctx.lineTo(hx, pad.t+cH); ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.stroke();
@@ -1349,20 +1393,23 @@ function drawChartFrame(st, hoverX) {
   }
 }
 
-function drawChart(C0,r,F,days){
+function drawChart(C0,r,F,days,proto){
   cancelPulse(); // أي نبضة قديمة تُلغى قبل استبدال الحالة
   if(r<=0){chartState=null;clearChart('أدخل العائد اليومي التقريبي أعلاه لعرض مسار النمو البياني');return;}
   const cv=$('chart'),ctx=cv.getContext('2d'),rect=cv.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
   cv.width=rect.width*dpr;cv.height=300*dpr;cv.style.height='300px';ctx.setTransform(dpr,0,0,dpr,0,0);
   const W=rect.width,H=300,pad={t:20,r:14,b:34,l:58},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const col=chartColors();
-  const opt=simulate(C0,r,F,days);
-  const nc=[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)-F}];
+  const opt=proto?protoSeries(C0,r,days):simulate(C0,r,F,days);
+  // معاينة البروتوكول: الأزرق = تراكم مدموج بدون رسوم، الأصفر = النظام الحالي (تدوير + رسوم). عكسها في الوضع العادي.
+  const nc=proto?simulate(C0,r,F,days):[{day:0,capital:C0},{day:days,capital:C0*(1+r*days)-F}];
+  const lbl1=proto?'● البروتوكول — تراكم مدموج (بدون رسوم)':'● مع التدوير الأمثل (بالرسوم)';
+  const lbl2=proto?'--- النظام الحالي — تدوير + رسوم $1':'--- بدون تدوير — سحب بالأخير';
   let mx=C0;opt.forEach(d=>{if(d.capital>mx)mx=d.capital;});nc.forEach(d=>{if(d.capital>mx)mx=d.capital;});
   const optFinal=opt[opt.length-1].capital;
   if(optFinal<=C0*1.001){chartState=null;clearChart('العائد اليومي صغير جداً مقابل الرسوم — لا يوجد نمو كافٍ');return;}
   
-  chartState = { C0, r, F, days, cv, ctx, W, H, pad, cW, cH, col, opt, nc, mx, mn: C0, rg: (mx-C0)||1 };
+  chartState = { C0, r, F, days, cv, ctx, W, H, pad, cW, cH, col, opt, nc, mx, mn: C0, rg: (mx-C0)||1, lbl1, lbl2 };
   initChartPulse(cv);
   
   if(!cv.dataset.inter){
@@ -1454,6 +1501,15 @@ function syncCommitBtn(){const b=$('btn-commit');if(!b)return;b.classList.toggle
 const btnCommit=$('btn-commit');
 if(btnCommit)btnCommit.addEventListener('click',()=>{COMMIT=!COMMIT;try{localStorage.setItem('co-commit',COMMIT?'1':'0');}catch(e){}syncCommitBtn();calculate();});
 syncCommitBtn();
+
+// معاينة البروتوكول: زر الهيرو (يحول الصفحة كلها لنظام البروتوكول القادم)
+function syncProtocolBtn(){const b=$('btn-protocol');if(!b)return;b.classList.toggle('on',PROTOCOL);b.setAttribute('aria-pressed',PROTOCOL?'true':'false');const l=$('protocol-lbl');if(l)l.textContent=PROTOCOL?'معاينة البروتوكول — مفعّلة':'معاينة البروتوكول القادم';}
+const btnProto=$('btn-protocol');
+if(btnProto)btnProto.addEventListener('click',()=>{PROTOCOL=!PROTOCOL;try{localStorage.setItem('co-protocol',PROTOCOL?'1':'0');}catch(e){}syncProtocolBtn();calculate();});
+syncProtocolBtn();
+
+// جدول الدورات الأصلي (يُستعاد عند العودة من معاينة البروتوكول)
+const CYCLE_TABLE_ORIG=(function(){const t=document.getElementById('cycle-table');return t?t.innerHTML:'';})();
 
 loadData();calculate();onInput();
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(calculate,200);});
@@ -1735,10 +1791,12 @@ function openStrategies(){
   const body=$('strat-body'),tag=$('strat-rate-tag');
   const rv=Math.max(0,getNum('rate',0));
   if(tag)tag.innerHTML='<span class="bdi">@ '+rv.toFixed(2)+'%</span>';
-  if(body){
-    if(rv<=0){
-      body.innerHTML='<div style="text-align:center;color:var(--ink-dim);font-size:.85rem;line-height:2;padding-top:3.5rem">أدخل <b style="color:var(--c1)">العائد اليومي التقريبي</b> أولاً<br>لتُحسب لك الخطط على أرقامك الحالية</div>';
-    }else{
+    if(body){
+      if(rv<=0){
+        body.innerHTML='<div style="text-align:center;color:var(--ink-dim);font-size:.85rem;line-height:2;padding-top:3.5rem">أدخل <b style="color:var(--c1)">العائد اليومي التقريبي</b> أولاً<br>لتُحسب لك الخطط على أرقامك الحالية</div>';
+      }else if(PROTOCOL){
+        body.innerHTML='<div style="text-align:center;color:var(--ink-dim);font-size:.85rem;line-height:2;padding-top:3.5rem">وضع <b style="color:var(--c1)">البروتوكول</b>: الأرباح مدموجة تلقائياً برأس المال<br>— لا رسوم ولا دورات سحب. تخارجك عبر بيع حصتك في الـ<b>Marketplace</b>.</div>';
+      }else{
       body.innerHTML=buildStratContent();
       wireStratBody(body);
     }
